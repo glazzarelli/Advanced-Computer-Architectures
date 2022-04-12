@@ -1,0 +1,82 @@
+%! Author = lazza
+%! Date = 11/04/2022
+
+\section{Pipelining}\label{sec:pipeline}
+
+MIPS instructions
+
+Instruction set, 32 bit
+architecture specific
+
+Exam:
+- assembly --> specific instruction for an architecture
+- design architecture
+
+CPU = data path plus  control unit
+Bus:
+- control
+- data
+- address
+Memory
+
+pipeline multi-cycle process: latency vs throughput
+
+RF : register file is used in ID and WB phase, clock divided in rising edges and falling edge, sometimes there
+are dependencies among instructions
+
+\subsection{Hazards}\label{subsec:hazards}
+
+\subsubsection{Data Hazard}
+Types:
+data
+and?
+
+-RAW
+Techniques: compilation(design) and hardware solutions(run-time)
+
+Stalls
+insertion of nops , compiler
+insertion of bubbles, architecture
+
+scheduling, reordering instruction without changing the overall result
+
+forwarding, shortcutting data from origin to next use EX-EX path, MEM-EX path, MEM-ID path, in WB-ID there's no
+need for a path, just persistence trough clock cycle.
+
+-Load/Use hazard, it requires a stall to use the MEM-EX path, two stalls to use the optimized pipelining
+
+-Load/Store hazard, forwarding MEM-WB
+
+MEM-ID path is not useful if we divide clock cycle in rising and falling edge
+
+Other architecture different from 5 stage mips:
+-WAW write after write , conflict if write after write are not executed in order
+-WAR write after read
+
+Data hazards: RAW, WAW, WAR
+
+\subsubsection{Control hazards}
+Mux output based on ALU output.
+Until alu doesn't compute output PC is not known, we cant know the next instruction.
+
+PC available at the memory stage.
+
+Generally true statements are executed during the waiting for the next instruction, as if  the condition is true, just PC plus 1, and then see if the branch is taken.
+
+branch stall with and without forwarding, 3 vs 2 stalls
+
+additional solution is the early evaluation of the PC, new pipeline in witch adder is anticipated in the ID stage, 1 stall to fetch the correct
+instruction
+
+this solution bring an issue with RAW: we do have to insert a stall.
+
+Branch prediction techniques
+- static
+
+- dynamic
+
+
+\subsubsection{}
+
+
+
