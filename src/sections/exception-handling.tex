@@ -1,0 +1,45 @@
+%! Author = lazza
+%! Date = 03/05/2022
+
+
+Exception handling
+
+definitions
+exception :
+interrupt : external of internal event that needs to be processed by another program (the interrupt handler), at the end resume normal execution
+
+External async events:
+- input output device-request
+- timer expiration
+- power disruptions, hardware failure
+
+Internal sync event:
+- undefined opcode, privileged instruction
+- arithmetic overflow, FPU exeception
+- misaligned memory access
+- virtual memory exceptions: page faults, TLB misse, protection violations
+- traps: system calls, e.g., jumps into kernel
+
+Exception classes:
+- synchronous vs asynchronous, asynch caused by devices external to the CPU and memory and can be handled easily
+- user requested vs coerced, user requested are predictable: treated as exceptions because they use the same mechanism that are used
+to save and restore the state;
+handled after the instruction has completed.
+Coerced are caused by some HW event not under control of the program.
+- user maskable vs user nonmaskable
+- within vs between instructions
+- resume vs terminate
+
+For the exam study difference between pairs.
+
+Invoking the interrupt handler:
+- terminate exec of instr till PC-4
+- store the PC in EPC register, exception program counter
+- disable other interrupts and transfers control to a designated interrupt running in the kernel mode
+
+In the cpu we have two modes: user-mode and kernel-mode (unstoppable).
+
+precise interrupts
+- easy handled
+
+Exception handling in the 5-stage pipeline

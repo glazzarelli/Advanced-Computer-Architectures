@@ -1,0 +1,175 @@
+%! Author = lazza
+%! Date = 02/05/2022
+
+\section{Exercise session 1 - Data Hazards}\label{sec:exercise-session-1}
+IF instruction fetch - ID instruction decode - EX execution - MEM memory access - WB write back
+
+single fetch per clock cycle : Microprocessor without Interlocked Pipelined Stages (SIMD)
+
+data conflict vs data hazards?
+A conflict can be an hazard
+
+exercise1:
+- highlight conflicts
+- data path, introduce forwarding, memorize data path + 3 forwarding path (diagonal) + 1 forwarding in the same clock
+- rescheduling
+
+exercise2:
+- highlight conflicts
+Resolve data hazards
+- without forwarding, stalls
+- with forwarding
+- scheduling
+Resolve control hazards
+- apply backward taken forward not taken
+
+Problem:
+solution a
+\[CPI = \frac{clock cycles}{instruction} = \sum_{i=0}^{n} CPI_i \times F_i\]
+where \(F_i = \frac{I_i}{Instruction count}\)
+
+solution b,c,d vedo formulario
+
+
+\section{Exercise session 2}\label{sec:exercise-session-2}
+Performance analysis
+
+Throughput vs Response time (latency?)
+- faster hardware : more throughput and minor response time
+- adding parallel hardware: more throughput, response time could be less, e.g, if there were a queue to serve, which
+was waiting for computing resources.
+
+Amdahl's law
+1) Hardware : Enhance fraction (of our application, program), if we enhance the entire application the max overall
+speedup is = 2,86.
+
+2)Parallelism: strong scaling, #thread vs serial part of a program
+Power consumption?
+
+3) pipelining
+conflict = dependency != hazard
+
+4) dynamic branch prediction
+
+
+
+\section{Exercise section 3}\label{sec:exercise-section-3}
+a) mips pipeline
+- calculate CPI, IC, MIPS
+IC instruction count
+MIPS million of instructions per second = Clock freq / (CPI * 10^6)
+
+b) simple pipeline
+- reschedule
+
+c) simple pipeline
+- forwarding
+
+d) BHT 1-bit 2-bit
+- colliding addresses
+
+
+\section{Exercise section 4}\label{sec:exercise-section-4}
+
+Exercise session 4
+
+Complex Pipeline aka VLIw
+- useful for FP operations (not considered in MIPS arch)
+- different latency for different FU, we can reach the WB with different latency, out-of-order commit (WAW and WAR possibles)
+- data and structural hazards? why structural? structural happens when two instruction need the same resource
+in-order-issue in MIPS and VLIW,
+
+FU units can be pipelined, example slide 13, DIV functional unit is multi-cycle and can't be pipeline, whereas the other
+FU can be pipelined.
+
+Complex pipeline assumption!
+- in-order issue
+- out-of-order commit
+
+ese A) feasible solutions, problems:
+1/4 out-of-order issue
+2/4 structural hazards on c8 and c11, same resource WB is request by two instruction! (besides having data hazards)
+3/4 structural hazard on C11
+4/4 Feasible:
+structural hazard on C11 solved by committing previous instruction and stalling 1 cycle the other.
+RAW hazard solved by stalls on ISSUE stage, where we read the register (ID only decode now), IS and WB in the same cycle is OK\@.
+WAR hazard instr 4 can enter the IS stage starting from cycle c7, which is WB stage (WB before or same cycle of IS) for instr 1
+WAW same as before?
+
+We cannot enter the issue stage if there's a WAR or WAW hazard until the WB stage.
+Stalls for WAW and WAR need to wait in the ID stage, RAW in the IS stage, for no particular reason.
+
+Adding buffer for instructions we stall only in the ISSUE stage letting IF and ID to not be stalled by structural hazards.
+
+ese B) VLIW schedule
+3-issue? what does that mean? maybe simultaneous issues
+
+In clock C8 there is no WAR hazard since register 4 is read by the two instruction at the same time and then addi will overwrite
+register 4  in the next instruction without compromising the other instruction.
+
+bne instr is on cycle C10 because we need register 4 in ID stage to early evaluate the PC, so we need to leave C9 to ID.
+(See exe 5, first exercise)
+
+pipelined version of the exercise, easy.
+
+ese C) VLIW schedule, fully pipelined
+
+\section{Exercise session 5}\label{sec:exercise-session-5}
+tiny url - exercises
+
+Branch always taken not very useful if early prediction is present.
+
+a) Scoreboard
+See recap about scoreboard
+
+In case of feasible configuration question, if it is not feasible one reason suffices.
+MULTF and MULTD are floating point, what's the difference?
+
+WAW hazard prevents instruction to be issued, solved at the clock cycle after previous WB
+WAR hazard stuck in the issue stage, solved at the clock cycle after previous WB
+
+b) Complex pipeline (watch it again min 52) + branch prediction
+Warning: store instruction just reads registers, no transitivity: indicate all possible conflicts
+
+infinite buffer in the issue stage, RAW and stall happens in this stage.
+WAW and WAR stalls in id stage till a clock cycle before WB, in WB the IS stage can start.
+
+target address of branch available in the fetch stage
+
+
+\section{Exercise session 6}\label{sec:exercise-sessione-7}
+Recall tomasulo pipeline: issue, execution, write (slide 6)
+
+a) tomasulo v2
+I1
+1cc issue "1", RSi "RS1"
+2cc start exe "2", Unit "LDU1"
+
+I2
+3cc cannot start execution, hazards type "RAW F6"
+4cc I1 writes the result on the CDB and reservation station reads the data, next cc data is propagated to the FU
+
+Attention: keep track of reservation station availability, I5 cannot start because of structural hazard.
+Attention: two FU cannot write in the same cycle - struct CDB hazard
+
+b) VLIW fully pipeline
+VLIW is a "asap" schedule.
+If there are no dependencies we can schedule two consecutive load.
+
+Attention: the instruction with no RAW dependencies can be schedule as soon as the cycle in which the destination register
+is read by a previous instruction.
+
+Note: after the bne there waiting cycle, why?
+
+
+c) scoreboard
+Recall pipeline: issue, read operands, exe complete, wb
+
+- highlight conflicts
+not feasible just name one problem:
+- two WB in the same cc may be struct problem (depends on the design of scoreboard, there are parallel write lines)
+- out of order issue
+- two IS in the same cc is a struct problem
+- RAW, WAR, WAW
+
+redo exercise

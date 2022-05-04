@@ -1,0 +1,82 @@
+%! Author = lazza
+%! Date = 03/05/2022
+
+\subsection{Dynamic Scheduling}\label{subsec:dynamic-scheduling}
+
+Scoreboard algo for dynamic scheduling
+
+when is it safe to Issue an instruction slide 13
+-
+-
+-
+-
+
+scoreboard manages commits to registers
+
+RAW detected in ID stage, ID stage divided in two:
+- instruction decode
+- read registers
+
+Scoreboard:
+RAW ID stalls
+WAR WB stalls
+WAW not issued (stall the issue) - register renaming not used
+
+techniques:
+- register renaming
+
+Scoreboard control structure:
+1. instruction status, tells witch istr is being executed
+2. functinal status, state of the functional unit
+3. register result status, indicated which functional unit will write each register.
+
+Qj and Qk tells who is going to provide the data in terms of functional unit (if not available yet)
+Rj and Rk tells if the data is ready or not, prevents WAR
+
+ADDD, DIVD, MULTD what D stands for?
+
+in-order issue
+out-of-order read
+out-of-order write
+
+-----
+
+Tomasulo algo
+
+load and store treated as integer FU
+
+Common Data Bus - serialized access to write back
+CDB provides values before they are saved into registers (somewhat similar to path forwarding)
+
+FP floating point?
+
+Reservation Station RS components
+-
+-
+-
+\ldots
+
+STAGES
+- issue
+-
+-
+
+V value
+Q pointer
+
+LD: 1 cc to integer operation (offset + base address) and 1 cc to access the memory = 2 cc for Execution Completion + 1 cc to commit in the CDB
+
+R(F4) = F4 value, register f4 Renamed
+
+in-order issue
+out-of-order execution
+out-of-order write
+
+try to do exercise on the slides
+
+in case of concurrent writes choose the one that belongs to the critical path.
+
+Scoreboard vs Tomasulo:
+- structural hazards in scoreboard
+- lack of forwarding in scoreboard
+

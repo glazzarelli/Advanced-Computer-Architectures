@@ -7,28 +7,34 @@
 
 
 \subsection{Flynn Taxonomy}\label{subsec:taxonomy}
-Single instruction: only one instruction stream is being acted on by the CPU during any one clock cycle.
-Single data: only one data stream is being used as input during any one clock cycle.
-Multiple Instruction: every processor may be executing a different instruction stream.
-Multiple Data: every processor may be working with a different data stream.
+\begin{itemize}
+    \item[] \textbf{Single instruction:} only one instruction stream is being acted on by the CPU during any one clock
+    cycle.
+    \item[] \textbf{Single data:} only one data stream is being used as input during any one clock cycle.
+    \item[] \textbf{Multiples instruction:} every processor may be executing a different instruction stream.
+    \item[] \textbf{Multiple Data:} every processor may be working with a different data stream.
+\end{itemize}
+
+
 \begin{itemize}
     \item SISD - Single Instruction Single Data – Uniprocessor systems
-    \item MISD - Multiple Instruction Single Data
-    No practical configuration and no commercial systems
-    \item SIMD - Single Instruction Multiple Data
-    Simple programming model, low overhead, flexibility, custom integrated circuits
-    \item MIMD - Multiple Instruction Multiple Data – Scalable, fault tolerant, off-the-shelf micros
+    \item MISD - Multiple Instruction Single Data\\
+    No practical configuration and no commercial systems.
+    \item SIMD - Single Instruction Multiple Data\\
+    Simple programming model, low overhead, flexibility, custom integrated circuits.
+    \item MIMD - Multiple Instruction Multiple Data\\
+    Scalable, fault tolerant, off-the-shelf micros.
 \end{itemize}
 
 \subsection{Parallelism}\label{subsec:parallelism}
 The SISD architecture is the oldest and provides deterministic execution.
 To account for events happening simultaneously we have to introduce parallelism.
 
-The SIMD, parallel architecture, multiple data each processing unit can operate on a different data element.
+The SIMD, parallel architecture, with multiple data each processing unit can operate on a different data element.
 Best suited for specialized problems characterized by a high degree of regularity, such as graphics/image processing.
 
 The MIMD, nowadays, the most common type of parallel computer, execution can be synchronous or asynchronous,
-deterministic or non-deterministic.
+deterministic or non-deterministic.\\
 
 Type of parallelism:
 \begin{itemize}
@@ -54,7 +60,7 @@ The operating systems implement multitasking differently based on the characteri
 Multithreading categories:
 \begin{itemize}
     \item single core
-        \subitem superscalar
+        \subitem superscalar\\
     A superscalar processor is a CPU that implements a form of parallelism called instruction-level parallelism within a
     single processor.
     In contrast to a scalar processor, which can execute at most one single instruction per clock
@@ -73,8 +79,7 @@ Multithreading categories:
     The former executes multiple instructions in parallel by using multiple execution units, whereas the latter executes
     multiple instructions in the same execution unit in parallel by dividing the execution (instruction) unit into
     different phases.
-        \subitem multiprocessing
-    ??
+        \subitem multiprocessing\\
 
     \item single core with multithreading support
         \subitem Fine grained multithreading:
@@ -118,7 +123,7 @@ Multithreading categories:
 
 \begin{figure}
     \centering
-    \includegraphics{images/multithreaded-categories}
+    \includegraphics[scale=0.25]{images/multithreaded-categories}
     \caption{Multithreaded categories}
     \label{fig:multithreaded-categories}
 \end{figure}

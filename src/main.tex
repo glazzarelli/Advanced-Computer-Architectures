@@ -8,13 +8,27 @@
 \usepackage{amsmath}
 \usepackage{graphicx}
 \usepackage{textcomp}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{booktabs}
+\usepackage{adjustbox}
+\usepackage{bitset}
 
 % Document
 \begin{document}
-    \include{sections/introduction}
-    \include{sections/pipeline}
+    \tableofcontents
 
-    \bibliography{main}
-    \bibliographystyle{plain}
+    %\include{sections/introduction}
+    \include{sections/pipeline}
+    \include{sections/data-hazards}
+    \include{sections/branch-prediction}
+    \include{sections/instruction-level-parallelism}
+    \include{sections/static-scheduling}
+    %\include{sections/dynamic-scheduling}
+    %\include{sections/exception-handling}
+
+
+    %\bibliography{main}
+    %\bibliographystyle{plain}
 
 \end{document}
