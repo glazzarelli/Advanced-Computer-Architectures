@@ -1,5 +1,2 @@
 # Project exclude paths
 /auxil/
-/out/main.aux
-/out/main.log
-/out/main.synctex.gz
