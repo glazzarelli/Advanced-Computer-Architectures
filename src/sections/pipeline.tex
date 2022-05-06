@@ -25,52 +25,60 @@ address buses.
 
 \paragraph{Execution of MIPS instructions} Every instruction in MIPS subset can be implemented in at most 5 clock
 cycles as follows:
-\begin{enumerate}
-    \item[IF] Instruction Fetch Cycle
-        \subitem Send the content of Program Counter register to Instruction Memory and fetch the
+\begin{description}
+    \item[IF] Instruction Fetch Cycle\\
+        Send the content of Program Counter register to Instruction Memory and fetch the
         current instruction from Instruction Memory.
+
         Update the PC to the next sequential address by adding 4 to the PC (since each instruction is 4 bytes).
 
-    \item[ID] Instruction Decode and Register Read Cycle
-        \subitem Decode the current instruction (fixed-field decoding)
+    \item[ID] Instruction Decode and Register Read Cycle\\
+        Decode the current instruction (fixed-field decoding)
         and read from the Register File of one or two registers
         corresponding to the registers specified in the
         instruction fields.
-        \subitem Sign-extension of the offset field of the instruction in
+
+        Sign-extension of the offset field of the instruction in
         case it is needed.
 
     \item[EX] Execution Cycle\\
     The ALU operates on the operands prepared in the
     previous cycle depending on the instruction type:
-        \subitem Register-Register ALU Instructions: ALU executes the specified operation on the operands read
+    \begin{itemize}
+        \item[-] Register-Register ALU Instructions: ALU executes the specified operation on the operands read
         from the RF
-        \subitem Register-Immediate ALU Instructions:
+        \item[-] Register-Immediate ALU Instructions:
         ALU executes the specified operation on the first operand
         read from the RF and the sign-extended immediate operand
-        \subitem Memory Reference:
+        \item[-] Memory Reference:
         ALU adds the base register and the offset to calculate the
         effective address.
-        \subitem Conditional branches:
+        \item[-] Conditional branches:
         Compare the two registers read from RF and compute the
         possible branch target address by adding the sign-
         extended offset to the incremented PC\@.
+    \end{itemize}
 
-    \item[ME] Memory Access
-        \subitem Load instructions require a read access to the Data
-        Memory using the effective address
-        \subitem Store instructions require a write access to the Data
+
+    \item[ME] Memory Access\\
+        Load instructions require a read access to the Data
+        Memory using the effective address.
+
+        Store instructions require a write access to the Data
         Memory using the effective address to write the data
-        from the source register read from the RF
-        \subitem Conditional branches can update the content of the PC
+        from the source register read from the RF\@.
+
+        Conditional branches can update the content of the PC
         with the branch target address, if the conditional test
         yielded true.
 
-    \item[WB] Write-Back Cycle
-        \subitem Load instructions write the data read from memory in
-        the destination register of the RF
-        \subitem ALU instructions write the ALU results into the
+    \item[WB] Write-Back Cycle\\
+        Load instructions write the data read from memory in
+        the destination register of the RF\@.
+
+        ALU instructions write the ALU results into the
         destination register of the RF\@.
-\end{enumerate}
+\end{description}
 
 
 \begin{figure}[h]

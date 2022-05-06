@@ -232,9 +232,11 @@ restrictions on movement of a code in a trace:
 
 \paragraph{Solutions}There are two approaches to eliminate control dependency:
 \begin{itemize}
-    \item use of \textbf{predicate} instructions (Hyperblock scheduling)
+    \item use of \textbf{predicate} instructions (Hyperblock scheduling).
+    Useful for mispredicted branches that limits ILP\@.
     \item use of \textbf{speculative} instructions (Speculative Scheduling), and speculatively move an instruction
     before the branch.
+    Useful for scheduling long latency loads early.
 \end{itemize}
 
 \begin{figure}[h]
@@ -244,43 +246,38 @@ restrictions on movement of a code in a trace:
     \label{fig:speculative-instruction}
 \end{figure}
 
+
 \begin{figure}[h]
     \centering
     \includegraphics[scale = 0.4]{images/predicated-execution}
-    \caption{Predicated execution}
+    \caption[Predicated execution]{Predicated execution}
     \label{fig:predicated-execution}
 \end{figure}
 
-Rotating Register Files
 
 
-\clearpage
-\subsection{Dynamic scheduling}\label{subsec:dynamic-scheduling}
+\subsection{Rotating Register Files}\label{subsec:rotating-register-files}
+Scheduled loops require lots of registers, lots of duplicated code in prolog and epilog.
+\textbf{Solution}: allocate new set of registers for each loop iteration.
 
-The hardware reorders the instruction execution to reduce pipeline
-stalls while maintaining data flow and exception behavior.
-•
-Main advantages:
-– It enables handling some cases where dependences are
-unknown at compile time
-– It simplifies the compiler complexity
-– It allows compiled code to run efficiently on a different pipeline.
-•
-Those advantages are gained at a cost:
-– A significant increase in hardware complexity,
-– Increased power consumption
-– Could generate imprecise exception
+\textbf{Rotating Register Base} (RRB) register points to base of current register set.
+A value is added to the \textit{logical} register specifier to give \textit{physical} register number.
 
-Basically: Instructions are fetched and issued in program order (in-
-order-issue)
-•
-Execution begins as soon as operands are available
-– possibly, out of order execution – note: possible even with
-pipelined scalar architectures.
-•
-Out-of order execution introduces possibility of WAR, WAW data
-hazards.
-•
-Out-of order execution implies out of order completion unless there
-is a re-order buffer to get in-order completion
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale = 0.4]{images/rotating-register-file-1}
+    \caption{Rotating Register Base}
+    \label{fig:rotating-register-base}
+\end{figure}
 
+If we know the clock cycles that each operation takes we can use rotate new register by
+\begin{center}
+    \textit{\#logical R} = \textit{\#physical R} $+$ (\#iteration \(\mod\) \#clock cycles required)
+\end{center}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale = 0.4]{images/rotating-register-file-2}
+    \caption{Rotating registers}
+    \label{fig:rotating-registers}
+\end{figure}

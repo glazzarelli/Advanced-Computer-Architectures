@@ -10,13 +10,23 @@
 \usepackage{textcomp}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
+\usepackage{enumitem}
 \usepackage{booktabs}
-\usepackage{adjustbox}
 \usepackage{bitset}
+\usepackage{xcolor}
+\usepackage{color}
 
-% Document
+\title{Advanced Computer Architecture \\ \large Professor Marco D. Santambrogio}
+\author{Gabriele Lazzarelli}
+\date{2022}
+
 \begin{document}
+    \maketitle
+    %\noindent\makebox[\textwidth]{\includegraphics[width= 8cm]{images/LogoPolimi.png}}
+
+    \clearpage
     \tableofcontents
+    \clearpage
 
     %\include{sections/introduction}
     \include{sections/pipeline}
@@ -24,11 +34,8 @@
     \include{sections/branch-prediction}
     \include{sections/instruction-level-parallelism}
     \include{sections/static-scheduling}
-    %\include{sections/dynamic-scheduling}
+    \include{sections/dynamic-scheduling}
     %\include{sections/exception-handling}
-
-
-    %\bibliography{main}
-    %\bibliographystyle{plain}
+    %\include{sections/hw-speculation}
 
 \end{document}
