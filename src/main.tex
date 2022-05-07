@@ -2,10 +2,10 @@
 %! Date = 10/04/2022
 
 % Preamble
-\documentclass[11pt]{article}
+\documentclass[9pt, twocolumn]{article}
 
 % Packages
-\usepackage{amsmath}
+\usepackage[a4paper, total={7in, 10in}]{geometry}\usepackage{amsmath}
 \usepackage{graphicx}
 \usepackage{textcomp}
 \usepackage[utf8]{inputenc}
@@ -35,7 +35,9 @@
     \include{sections/instruction-level-parallelism}
     \include{sections/static-scheduling}
     \include{sections/dynamic-scheduling}
-    %\include{sections/exception-handling}
-    %\include{sections/hw-speculation}
+    \include{sections/exception-handling}
+    \include{sections/hw-speculation}
+    \include{sections/register-renaming}
+    \include{sections/ilp-limits}
 
 \end{document}

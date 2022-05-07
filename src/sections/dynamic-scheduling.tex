@@ -329,7 +329,7 @@ Then at next clock cycle it commits to the CDB\@.
 Stores complete their execution in their Write
 Result stage (writes data to memory).
 
-All writes occur in Write Result – simplifying
+All writes occur in Write Result, simplifying
 Tomasulo algorithm.
 
 A Load and a Store can be done in different
@@ -364,9 +364,52 @@ Drawback: amount of hardware required.
 Each RS must contain a fast associative buffer;
 single CDB may limit performance.
 
+---
+
+\subsubsection{Tomasulo Loop}
+Why can Tomasulo overlap iterations of loops?
+• Register renaming
+– Multiple iterations use different physical destinations for registers
+(dynamic loop unrolling).
+– Replace static register names from code with dynamic register
+“pointers”
+– Effectively increases size of register file
+– Permit instruction issue to advance past integer control flow
+operations.
+• Crucial: integer unit must “get ahead” of floating
+point unit so that we can issue multiple iterations
+Þ Branch Prediction
+Other idea: Tomasulo building “DataFlow” graph.
+
+Tomasulo Drawbacks
+• Complexity
+– Large amount of hardware
+– delays of 360/91, MIPS 10000, IBM 620?
+• Many associative stores (CDB) at high speed
+• Performance limited by Common Data Bus
+– Multiple CDBs => more FU logic for parallel assoc
+stores
+
+Summary
+• HW exploiting ILP
+– Works when can’t know dependence at compile time.
+– Code for one machine runs well on another
+• Reservations stations: renaming to larger set of registers
++ buffering source operands
+– Prevents registers as bottleneck
+– Avoids WAR, WAW hazards of Scoreboard
+– Allows loop unrolling in HW
+• Not limited to basic blocks
+(integer units gets ahead, beyond branches)
+• Lasting Contributions
+– Dynamic scheduling
+– Register renaming
+– Load/store disambiguation
 
 
 ----
+
+
 Scoreboard vs Tomasulo:
 - structural hazards in scoreboard
 - lack of forwarding in scoreboard
@@ -391,7 +434,7 @@ registers.
 • Control centralized
 through the Scoreboard.
 
-Control & buffers distributed with Function Units (FU) vs.
+Control \& buffers distributed with Function Units (FU) vs.
 centralized in scoreboard;
 – FU buffers called “reservation stations”;
     have pending operands

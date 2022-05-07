@@ -1,0 +1,26 @@
+%! Author = lazza
+%! Date = 07/05/2022
+
+\subsubsection{Superscalar}
+Superscalar execution allows multiples-issue and out-of-order execution.
+
+\paragraph{Key requirements}
+\begin{description}
+    \item[-] Fetching more instructions per clock cycle
+\end{description}
+
+\section{ILP limits}\label{sec:ilp-limits}
+With single-issue ILP we can be reach an ideal CPI = 1.
+With superscalar execution our \textit{ideal} CPI can decrease furthermore.
+
+\paragraph{Assumptions} The ideal machine must have:
+\begin{description}
+    \item[Register renaming] infinite virtual registers and all WAW and WAR hazards are avoided
+    \item[Branch prediction] perfect, no mispredictions
+    \item[Jump prediction] all jumps perfectly predicted, machine with perfect speculation and an unbounded buffer of
+    instructions available
+    \item[Memory address alias analysis]\footnote{Alias analysis is a technique used to determine if a storage location may be accessed in more than one way} addresses are know and a store can be moved before a load provided the 
+    addresses not equal 
+    \item[One cycle latency for all instructions] unlimited number of instructions issued per clock cycle
+\end{description}
+In rea
