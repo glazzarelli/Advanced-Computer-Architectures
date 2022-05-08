@@ -2,7 +2,7 @@
 %! Date = 10/04/2022
 
 % Preamble
-\documentclass[9pt, twocolumn]{article}
+\documentclass[9pt, twocolumn, twoside]{article}
 
 % Packages
 \usepackage[a4paper, total={7in, 10in}]{geometry}\usepackage{amsmath}
@@ -16,28 +16,27 @@
 \usepackage{xcolor}
 \usepackage{color}
 
-\title{Advanced Computer Architecture \\ \large Professor Marco D. Santambrogio}
-\author{Gabriele Lazzarelli}
-\date{2022}
+%\title{Advanced Computer Architecture \\ \large Professor Marco D. Santambrogio}
+%\author{Gabriele Lazzarelli}
+%\date{2022}
 
 \begin{document}
-    \maketitle
+    %\maketitle
     %\noindent\makebox[\textwidth]{\includegraphics[width= 8cm]{images/LogoPolimi.png}}
 
-    \clearpage
     \tableofcontents
     \clearpage
 
-    %\include{sections/introduction}
-    \include{sections/pipeline}
-    \include{sections/data-hazards}
-    \include{sections/branch-prediction}
-    \include{sections/instruction-level-parallelism}
-    \include{sections/static-scheduling}
-    \include{sections/dynamic-scheduling}
-    \include{sections/exception-handling}
-    \include{sections/hw-speculation}
-    \include{sections/register-renaming}
-    \include{sections/ilp-limits}
+    %\input{sections/introduction}
+    \input{sections/pipeline}
+    \input{sections/data-hazards}
+    \input{sections/branch-prediction}
+    \input{sections/instruction-level-parallelism}
+    \input{sections/static-scheduling}
+    \input{sections/dynamic-scheduling}
+    \input{sections/exception-handling}
+    \input{sections/hw-speculation}
+    \input{sections/register-renaming}
+    \input{sections/ilp-limits}
 
 \end{document}

@@ -1,4 +1,66 @@
 %! Author = lazza
 %! Date = 07/05/2022
 
-\section{Register renaming}\label{sec:register-renaming}
+\section{Explicit register renaming}\label{sec:register-renaming}
+Tomasulo provides \textit{implicit} register renaming by the means of reservation stations or ROB\@.
+Now we introduce \textit{explicit} register renaming: use a physical register file that is larger than the number of
+registers specified by the ISA\@.
+
+Idea: allocate a new physical destination register for every instruction that writes:
+\begin{itemize}[noitemsep]
+    \item removes WAW, WAR hazards
+    \item allows out-of-order completion (like tomasulo)
+    \item similar to SSA, Static Single Assignment transformation done the compiler
+\end{itemize}
+
+\paragraph{Mechanism} Keep a translation table:
+\begin{itemize}[noitemsep]
+    \item map ISA \textit{logical} register to physical register
+    \item when a register is written, replace the map entry with new register from freelist
+    \item physical register becomes free when not used by any active instructions
+\end{itemize}
+
+\paragraph{Unified physical register file}
+\begin{itemize}
+    \item rename all architectural (logical) registers into a single physical register file during decode, no register
+    values read
+    \item FUs read and write from single unified register file holding committed and temporary registers in execution
+    \item commit only updates mapping of architectural register to physical register, no data movement
+\end{itemize}
+
+\paragraph{HW register renaming}
+\begin{description}
+    \item[Renaming map] simple data structure that supplies the physical register number of the register that
+    currently corresponds to the requested architectural register
+    \item[Instruction commit] update permanently the renaming table to indicate that the physical register holding
+    the destination values corresponds to the actual architectural register
+    \item[ROB] Use reorder buffer to enforce in-order commit
+\end{description}
+
+\subsection{Explicit renaming - Scoreboard}\label{subsec:explicit-renaming---scoreboard}
+\subsubsection{Stages}
+\begin{description}
+    \item[Issue] decode instructions and check for structural hazards \textcolor{red}{and allocate new physical
+    register for result}:
+    \begin{itemize}[noitemsep]
+        \item[-] instructions issued in program order (for hazard checking)
+        \item[-] \textcolor{red}{don't issue if there are no free physical registers}
+        \item[-] don't issue if there's a structural hazard
+    \end{itemize}
+    \item[Read operands] wait until there are no more hazards, then read operands.
+    All real dependencies solved in this stage, since we wait for instructions to write data back.
+    \item[Execution] operate on operands.
+    The functional unit begins execution upon receiving operands.
+    When the result is ready, it notifies the scoreboard.
+    \item[Write result] finish execution
+\end{description}
+\textbf{Note:} \textcolor{red}{no check for WAR and WAW hazards.}
+
+\subsection{Register renaming vs ROB}\label{subsec:register-renaming-vs-rob}
+\begin{itemize}[noitemsep]
+    \item[-] instruction commit simpler than with ROB
+    \item[-] deallocating register more complex
+    \item[-] dynamic mapping or architectural to physical registers complicates design and debugging.
+\end{itemize}
+
+

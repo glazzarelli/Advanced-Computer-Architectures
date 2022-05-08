@@ -1,19 +1,30 @@
 %! Author = lazza
 %! Date = 07/05/2022
-
-\subsubsection{Superscalar}
+\section{ILP limits}\label{sec:ilp-limits}
+\subsection{Superscalar}\label{subsec:superscalar}
 Superscalar execution allows multiples-issue and out-of-order execution.
 
 \paragraph{Key requirements}
 \begin{description}
-    \item[-] Fetching more instructions per clock cycle
+    \item[-] Fetching more instructions per clock cycle: no major problem provided the instruction cache can sustain
+    the bandwidth and can manage more requests at the same time.
+    \item[-] Decide on data and control dependencies: dynamic scheduling and dynamic branch prediction
 \end{description}
 
-\section{ILP limits}\label{sec:ilp-limits}
+\paragraph{Beyond CPI = 1} 
+\begin{itemize}[noitemsep]
+    \item issue multiple instruction per clock-cycle
+    \item varying number of instruction per cycle (1 to 8)
+    \item scheduled by the compiler or HW
+\end{itemize}
+\[CPI_{ideal} =\frac{1}{issue-width}\]
+
+
 With single-issue ILP we can be reach an ideal CPI = 1.
 With superscalar execution our \textit{ideal} CPI can decrease furthermore.
 
-\paragraph{Assumptions} The ideal machine must have:
+\subsection{Assumptions}\label{subsec:assumptions}
+The ideal machine must have:
 \begin{description}
     \item[Register renaming] infinite virtual registers and all WAW and WAR hazards are avoided
     \item[Branch prediction] perfect, no mispredictions
@@ -23,4 +34,25 @@ With superscalar execution our \textit{ideal} CPI can decrease furthermore.
     addresses not equal 
     \item[One cycle latency for all instructions] unlimited number of instructions issued per clock cycle
 \end{description}
-In rea
+
+\subsection{Limits on window size}\label{subsec:limits-on-window-size}
+Dynamic analysis is necessary to approach
+perfect branch prediction (impossible at compile
+time!).
+A perfect dynamic-scheduled CPU should:
+\begin{itemize}[noitemsep]
+    \item[-] Look arbitrarily far ahead to find set of instructions to
+    issue, predict all branches perfectly
+    \item[-] Rename all registers uses (no WAW, WAR hazards);
+    \item[-] Determine whether there are data dependencies
+    among instructions in the issue packet, rename if
+    necessary
+    \item[-] Determine if memory dependencies exist among
+    issuing instructions, handle them
+    \item[-] Provide enough replicated functional units to allow all
+    ready instructions to issue.
+\end{itemize}
+Size affects the number of comparisons necessary to determine
+RAW dependencies.
+The number of comparisons to evaluate for data dependencies among n register-to-register
+instructions in the issue phase is \(n^2 - n\).

@@ -130,8 +130,7 @@ Many blank lines in the scheduler corresponds to nops, leading to \(\frac{1\text
 , which is far from our ideal CPI > 1.
 To increase parallelism we use loop unrolling.
 
-\clearpage
-\subsection{Loop unrolling}
+\subsection{Loop unrolling}\label{subsec:loop-unrolling}
 The idea is that we can extend the loop body as to include a finite number of subsequent iterations of the loop,
 increasing the amount of available ILP\@.
 Unrolling simply replicates the loop body multiple times, adjusting the loop termination code, by doing so the loop
@@ -184,7 +183,6 @@ ops}}{4\text{ cycles}} = 1\).
 \textbf{Note:} in case of short loops, loop unrolling looses performance due to the costs of starting and closing the
 iterations.
 
-\clearpage
 \subsection{Trace Scheduler}\label{subsec:trace-scheduler}
 Loop unrolling is useful but does not cover other type of branches that limit the basic \textbf{block size} in
 control-flow intensive irregular code.
