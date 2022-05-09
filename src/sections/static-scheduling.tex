@@ -34,7 +34,7 @@ Till know we had a single-core multi-cycle parallelism, thanks to the single-iss
 The single-issue architecture means we cannot aim to have an ideal CPI bigger than one.
 
 Multi-issue architectures are the next step to improve the CPI:
-\begin{itemize}
+\begin{itemize}[noitemsep]
     \item Superscalar
     \item VLIW
 \end{itemize}
@@ -43,7 +43,7 @@ Multi-issue architectures are the next step to improve the CPI:
 Each instruction word contains more than one operation, the processor can initiate multiple operations per cycle
 specified completely by the compiler.
 This leads to a low hardware complexity:
-\begin{itemize}
+\begin{itemize}[noitemsep]
     \item no scheduling
     \item reduced support of variable latency instructions
     \item single control flow (1 PC)
@@ -74,7 +74,7 @@ Compiler responsibilities:
         \item it is necessary to map the instructions over the machine functional units
         \item this mapping must account for time constraints and dependencies among the tasks
     \end{itemize}
-    \item guarantee intra instruction parallelism
+    \item guarantee intra-instruction parallelism
     \item avoid hazards (no interlocks), typically separates operations with explicit nops
     \item minimize the total execution time
 \end{itemize}

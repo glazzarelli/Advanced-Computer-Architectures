@@ -270,16 +270,19 @@ Initially contains the instruction offset (immediate field), after address calcu
     \item[ISSUE] Get an instruction I from the queue.
     If it is an FP op check if a RS is empty (i.e., check for structural hazards).
 
-    Rename registers
-
-    WAR resolution\\
+    \underline{Rename registers:}
+    \begin{itemize}
+        \item[] \underline{WAR resolution}\\
     If I writes Rx, read by an instruction K already issued, K
     knows already the value of Rx or knows what instruction
     will write it.
-    So the RF can be linked to I
+    So the RF can be linked to~ I
+        \item[] \underline{WAW resolution}\\
+    Since we use in-order issue, the RF can be linked to~ I
+    \end{itemize}
 
-    WAW resolution\\
-    Since we use in-order issue, the RF can be linked to I
+
+
     \item[EXECUTION] When both operands are ready then execute.
 
     If not ready, watch the common data bus for results.
@@ -306,11 +309,7 @@ Initially contains the instruction offset (immediate field), after address calcu
     Mark reservation stations available.
 \end{description}
 
----
-
-in case of concurrent writes choose the one that belongs to the critical path.
-limitations see slide 78
----
+In the general case of concurrent writes choose the one that belongs to the critical path.
 
 \subsubsection{Tomasulo in detail}
 Loads and stores go through a functional unit

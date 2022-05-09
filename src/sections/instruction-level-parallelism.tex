@@ -54,21 +54,21 @@ A new stage introduced, the ISSUE stage, that allows for high performance in pre
 
 New hazards arise from variable latencies of different FUs:
 \begin{itemize}
-    \item Structural
+    \item Structural, stalls arise in:
     \begin{itemize}
         \item EX stage if some FPU or memory unit is not pipelined and takes more than one cycle.
         \item WB stage due to variable latencies of different functional units
     \end{itemize}
     \item Data
     \begin{itemize}
-        \item WAW due to variable latencies of the FUs
+        \item WAW and WAR due to variable latencies of the FUs
     \end{itemize}
 \end{itemize}
 
 A solution would be delay the WB in order to have the same latency for all instructions but that would slow down too
 much single cycle integer operations without forwarding.
 
-\paragraph{When it is safe to issue an Instruction?} Things to consider before dispatching an instruction:
+\paragraph{When it is safe to issue an Instruction?} Things to consider when dispatching an instruction:
 \begin{itemize}
     \item the required FU is available
     \item the input data is available
@@ -93,7 +93,7 @@ much single cycle integer operations without forwarding.
 \end{itemize}
 
 
-To reach higher performance more parallelism must be achieved, this cannot be done augmenting the CPI of the ideal
+To reach higher performance, more parallelism must be achieved, this cannot be done augmenting the CPI of the ideal
 pipeline because it could create further problems with hazards.
 
 Dependences must be detected and solved, and
@@ -102,7 +102,7 @@ achieve highest parallelism of execution compatible
 with available resources.
 
 Three types of dependencies:
-\begin{itemize}
+\begin{itemize}[noitemsep]
     \item data dependencies, RAW
     \item control dependencies
     \item name dependencies, two types:
@@ -142,7 +142,7 @@ Steps to exploit more ILP in terms of hardware optimization:
     \end{itemize}
 \end{itemize}
 
-\begin{figure}
+\begin{figure}[h]
     \centering
     \includegraphics[scale = 0.35]{images/ILP-scheme}
     \caption{Instruction Level Parallelism}

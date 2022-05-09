@@ -140,7 +140,7 @@ A misprediction occurs when:
     To solve this problem it is enough to increase the number of rows in the BHT or to use a hashing function.
 \end{itemize}
 
-Among the n-bits BHT the 2-bit history table is the best one because it is still small in size, it allows for speedy
+Among the n-bits BHT the \textbf{2-bit history table} is the best one because it is still small in size, it allows for speedy
 updates maintaining
 the prediction accuracy high, but differently from the 1-bit the prediction must miss twice before it is changed.
 In a loop branch we do not need to change the prediction at the last iteration, thus increasing the speed in case of
@@ -175,6 +175,7 @@ Example: a (2, 2) correlating predictor with 64 total entries;
 6-bit index composed of: 2-bit global history and 4-bit low-
 order branch address bits.
 
+The (2,2) correlating branch predictor outperforms other predictors such as the 2-bit BHT\@.
 \begin{figure}[H]
     \centering
     \includegraphics[scale = 0.4]{images/(2,2)-correlating-branch-predictor}
@@ -182,4 +183,3 @@ order branch address bits.
     \label{fig:(2,2)-correlating-branch-predictor}
 \end{figure}
 
-The (2,2) correlating branch predictor outperforms other predictors such as the 2-bit BHT.
