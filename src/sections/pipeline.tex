@@ -83,7 +83,7 @@ cycles as follows:
 
 \begin{figure}[h]
     \centering
-    \includegraphics[scale = 0.4]{images/MIPS-data-path}
+    \includegraphics[scale = 0.35]{images/MIPS-data-path}
     \caption{MIPS data path}
     \label{fig:mips-data-path}
 \end{figure}
@@ -93,7 +93,7 @@ load instruction: T = 8ns.
 Each instruction is executed in a single clock cycle of 8ns.
 \begin{figure}[h]
     \centering
-    \includegraphics[scale=0.4]{images/instructions-latency}
+    \includegraphics[scale=0.38]{images/instructions-latency}
     \caption{Instruction latency}
     \label{fig:instruction-latency}
 \end{figure}
@@ -115,6 +115,6 @@ The multi-cycle execution can be sequential of pipelined.
 
 
 The Register File is used in WB and ID stages.
-In the \textbf{optimized pipeline} the RF write in the first half of the clock cycle and the RF read occurs in the
+In the \textbf{optimized pipeline} the RF-write in the first half of the clock cycle and the RF-read occurs in the
 second half of the clock cycle avoiding a possible read after write hazard which otherwise would've required a stall.
 It is safely to assume that the optimized pipeline will be the standard pipeline throughout the course.

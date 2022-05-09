@@ -1,0 +1,105 @@
+%! Author = lazza
+%! Date = 09/05/2022
+
+\section{Performance and Cost}\label{sec:performance-and-cost}
+When we say that one computer is faster than another what do we mean?
+It depends on what is important.
+
+Two metrics:
+\begin{description}
+    \item[Computer system user] minimize elapsed time for program execution:\\
+    \textbf{latency:} (response time) execution time = time\_end - time\_start
+    \item[Computer center manager] maximize completion rate \(=\frac{\#jobs}{\sec}\)\\
+    \textbf{throughput:} total amount of work done in a given time
+\end{description}
+Throughput \(= \frac{1}{latency}\) only if there is not overlap between instructions, otherwise throughput >
+response time.
+
+\subsection{Measures}\label{subsec:measures}
+\begin{gather*}
+    \text{"X is k\% faster than Y"} = \frac{\text{execution time (y)}}{\text{execution time (x)}} = 1 + \frac{n}{100}\\
+    \text{\textbf{Performance (x)}} = \frac{1}{\text{execution time(x)}}\\
+    \Rightarrow \text{"X is k\% faster than Y"} = \frac{\text{performance (x)}}{\text{performance (y)}} = 1 +
+\frac{n}{100}\\
+\end{gather*}
+
+\[\text{\textbf{Speed up (x,y)}} = \frac{\text{performance (x)}}{\text{performance (y)}}\]
+
+\subsection{Amdahl's Law}\label{subsec:amdahl's-law}
+Suppose that an enhancement E accelerates a fraction F of the task by a factor S (speedup enhanced), and the remainder
+of the task in unaffected.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale = 0.3]{images/amdahls-law}
+    \caption{In green the (F) fraction enhanced.}
+    \label{fig:amdalhs-law}
+\end{figure}
+
+\begin{gather*}
+    ExTime_{new} = ExTime_{old} \times \left( \left( 1 - F_{en} \right) +
+\frac{F_{en}}{S_{en}} \right)\\
+    \mathbf{S_{overall}} = \frac{ExTime_{old}}{ExTime_{new}} = \frac{1}{\left( 1-F_{en} \right) +
+\frac{F_{en}}{S_{en}}}\\
+    \mathbf{Speedup_{overall(max)}} = \frac{1}{\left( 1 - F_{en} \right)}\\
+\end{gather*}
+
+This means that if an enhancement is only usable for a fraction
+of a task we can’t speed up the task by more
+than the reciprocal of 1 minus the fraction.
+An upgrade is worth it if \(costs < speedup_{overall}\).
+
+\textbf{Note:} in case of threads:
+\[\mathbf{Speedup_{overall}} = \frac{1}{s + \frac{p}{N}}\\\]
+s = serial part = 1 - Fraction enhanced\\
+p = 1 - s = parallelized part = Fraction enhanced\\
+N = number of processors or threads = Speedup
+
+
+\subsection{CPU time and CPI}\label{subsec:cpu-time-and-cpi}
+For computer architects:
+\begin{center}
+    Response time = CPU time + I/O wait
+\end{center}
+
+The \textbf{CPU time} does not include I/O wait time and corresponds to the time spent running the program.
+
+\begin{center}
+    \begin{align*}
+        \text{CPU time (P)} &= \frac{\text{cc needed to execute P}}{\text{clock frequency}}\\
+                     &= \text{cc needed to execute P} \times \text{cc time}
+    \end{align*}
+\end{center}
+
+\begin{center}
+    \textbf{CPI} \(=\frac{cycles}{instruction}\)
+\end{center}
+
+\begin{center}
+    \textbf{IC} \(=\frac{instructions}{program}\)
+\end{center}
+
+\begin{center}
+    \textbf{Cycle Time} \(=\frac{time}{seconds}\)
+\end{center}
+
+\begin{center}
+    \textbf{CPU time} \(= IC \times CPI \times Cycle\_Time = \frac{seconds}{program}\)
+\end{center}
+
+\subsection{MIPS and MFLOPS}\label{subsec:mips-and-mflops}
+MIPS has its shortcomings: it counts every instruction as if they were all equal, CPI varies with different
+instructions.
+\begin{align*}
+    \text{\textbf{MIPS}} &= \text{millions of instructions per second}\\
+                         &= \frac{\text{number of instructions}}{\text{execution time} \times 10^6}\\
+                         &= \frac{\text{clock frequency}}{\text{CPI}\times 10^6}
+\end{align*}
+
+MFLOPS takes care of the problems related to MIPS and considers only the number of floating point operations, which we
+assume
+independent from compiler and ISA.
+
+\begin{center}
+    \textbf{MFLOPS} \(= \frac{\text{Floating point operations in program}}{\text{CPU time} \times 10^6}\)
+\end{center}

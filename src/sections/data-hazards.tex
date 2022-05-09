@@ -40,12 +40,13 @@ Attempt to use a result before it is ready, three different types:
 
 The RAW hazard is the only possible hazard in the MIPS architecture since all five stages are accessed in the
 same order in and between instructions, this is due to the fact that in the MIPS architecture there cannot
-be simultaneous access to the same resource and the access to the resources follow the order of the instructions.
+be simultaneous or out-of-order access to the same resource.
+The access to the resources follow the order of the instructions.
 
 For this reason write backs are in-order and therefore WAW cannot happen, and the reading of registers of a previous
 instruction happens always before the write back of a subsequent instruction precluding the WAR hazards.
 
-RAW hazards can be dealt with at compile-time (design solution) or at run-time (hardware solution).
+In MIPS, RAW hazards can be dealt with at compile-time (design solution) or at run-time (hardware solution).
 
 \paragraph{Compilation Techniques}
 \begin{itemize}
@@ -62,8 +63,8 @@ when the compiler does not find independent instructions, it inserts nops.
     \item[\textrightarrow] Data Forwarding (or Bypassing)
 \end{itemize}
 
-Forwarding data means shortcutting data from one resource of the CPU as output to another resource of the CPU as
-input using one clock cycle for the propagation, this means using temporary result stored in the pipeline instead of
+Forwarding data means shortcutting data from one resource of the CPU, as output, to another resource of the CPU, as
+input, using one clock cycle for the propagation, this means using temporary result stored in the pipeline instead of
 waiting for the write back of results in the RF\@.
 Forwarding costs are additional multiplexers to allow to fetch inputs from the pipeline.\\
 In the MIPS architecture the common paths for data forwarding are EX-EX, MEM-EX, MEM-MEM\@.
@@ -113,7 +114,7 @@ In case we wait for the evaluation of the condition the stalls required are two 
 
 An additional solution would be the early evaluation of the PC in the ID stage instead of the EXE stage, in this new
 pipeline the PC adder is anticipated and only one stall would be required (with forwarding) to fetch the correct instruction.
-This solution bring an issue in presence of a RAW hazard: anticipating the PC adder means that we have to add a stall
+This solution brings an issue in presence of a RAW hazard: anticipating the PC adder means that we have to add a stall
 in order to solve the conflict.
 
 \begin{figure}[h]
