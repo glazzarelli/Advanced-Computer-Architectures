@@ -34,11 +34,12 @@ The instruction at the \textbf{head} of ROB can safely commit, all its predecess
 \paragraph{Separating Completion from Commit} Re-order buffer holds the register result from completion until commit:
 \begin{itemize}[noitemsep]
     \item[-] entries are allocated in program order during decode
-    \item[-] it buffers completed values and exception state until commit point
+    \item[-] it buffers \textit{completed values} and \textit{exception state} until commit point
     \item[-] completed values can be used by dependents before committed (bypassing)
-    \item[-] each entry holds a program counter, instruction type, destination register specifier and value if any,
-    and exception status
+    \item[-] each entry holds a \textit{PC}, \textit{instruction type}, \textit{destination register} specifier and
+    \textit{value} and, if any, \textit{exception status}.
 \end{itemize}
+
 
 \paragraph{Memory reordering} It needs special data structures:
 speculative store address and data buffers, speculative load address and data buffers.
@@ -94,6 +95,62 @@ Each ROB entries contains four fields:
     completed execution, ready to commit
 \end{description}
 
+\begin{table}[H]
+    \centering
+    \begin{tabular}{llllll}
+        & & \textbf{I type} & \textbf{dest} & \textbf{value} & \textbf{ready}  \\
+        head => & 1 & ADDD & F4 & 2.0 & yes \\
+        & 2 & MULD & F8 & - & no \\
+        & 3 & ADDD & F6 & - & no \\
+        & 4 & SUBI & F0 & 1.0 & yes \\
+    \end{tabular}
+    \caption{ROB example}
+    \label{tab:rob-example}
+\end{table}
+
+The register file associated with this ROB:
+\begin{table}[H]
+    \centering
+    \begin{tabular}{l|ll}
+        \textbf{} & \textbf{V} & \textbf{Q} \\
+        F0 & 1.0 & rob4 \\
+        F2 & 5.5 & - \\
+        F4 & 3.2 & rob1 \\
+        F6 & 4.0 & rob3 \\
+        F8 & 0.0 & rob2 \\
+        \
+    \end{tabular}
+    \caption{Register File - RF}
+    \label{tab:register-file-with-rob}
+\end{table}
+
+Since the head of ROB is ready we can commit and update the tables:
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{llllll}
+        & & \textbf{I type} & \textbf{dest} & \textbf{value} & \textbf{ready}  \\
+        & 1 & - & - & - & - \\
+        head => & 2 & MULD & F8 & - & no \\
+        & 3 & ADDD & F6 & - & no \\
+        & 4 & SUBI & F0 & 1.0 & yes \\
+    \end{tabular}
+    \label{tab:rob-example2}
+\end{table}
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{l|ll}
+        \textbf{} & \textbf{V} & \textbf{Q} \\
+        F0 & 1.0 & rob4 \\
+        F2 & 5.5 & - \\
+        F4 & \textbf{2.0} & - \\
+        F6 & 4.0 & rob3 \\
+        F8 & 0.0 & rob2 \\
+    \end{tabular}
+    \label{tab:register-file-with-rob2}
+\end{table}
+
 \subsubsection{ROB extension}
 The addition of the reorder buffer introduces changes in tomasulo:
 \begin{itemize}[noitemsep]
@@ -105,7 +162,7 @@ The addition of the reorder buffer introduces changes in tomasulo:
     \item all instructions excluding incorrectly predicted branches (or incorrectly speculated loads) commit when
     reaching head of ROB
     \item when a incorrectly predicted branch reaches the head, ROB is flushed, execution restarts at correct
-    successor of branch \textrightarrow speculative active are easily undone
+    successor of branch \textrightarrow speculation is easily undone
     \item processor with ROB can dynamically speculate while maintaining a precise interrupt model
 \end{itemize}
 

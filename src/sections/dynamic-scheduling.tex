@@ -314,7 +314,7 @@ Initially contains the instruction offset (immediate field), after address calcu
 
 \subsubsection{Tomasulo Stages}
 \begin{description}
-    \item[ISSUE] Get an instruction I from the queue.\\
+    \item[Issue] Get an instruction I from the queue.\\
     If it is an FP op check if a RS is empty (i.e., check for structural hazards).\\
     If it is a \verb|ld| or \verb|sd| check if the corresponding buffers have a free spot.
 
@@ -329,7 +329,7 @@ Initially contains the instruction offset (immediate field), after address calcu
     Since we use in-order issue, the RF can be linked to~I
     \end{itemize}
 
-    \item[EXECUTION] When both operands are ready then execute.
+    \item[Execution] When both operands are ready then execute.
 
     If not ready, watch the CDB for results: delay execution until operands are available, RAW
     hazards are avoided.\\
@@ -346,7 +346,7 @@ Initially contains the instruction offset (immediate field), after address calcu
     being sent to memory unit.
     \end{itemize}
 
-    \item[WRITE] When result is available, write on Common Data Bus and from there into RF and into all RSs
+    \item[Write] When result is available, write on Common Data Bus and from there into RF and into all RSs
     (including store buffers) waiting for this result then mark reservation stations available.\\
     \textbf{Note:} In the general case of concurrent writes, choose first the one that belongs to the critical path.
 \end{description}
