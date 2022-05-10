@@ -17,10 +17,11 @@ branch, i.e., behind the basic blocks.
 
 \subsection{Reorder buffer}\label{subsec:reorder-buffer}
 A buffer that holds instruction results before they are committed.
-When an instruction complete execution, the results are placed into ROB, which holds the instructions in FIFO order,
+When an instruction completes execution, the results are placed into ROB, which holds the instructions in FIFO order,
 exactly as issued.
-The result in the ROB buffer are tagged, they are used instead of the reservation stations, supplying operands to
-other instruction between execution and commit.
+
+The result in the ROB buffer are tagged, they are used instead of the reservation stations to supply operands to
+other instruction between execution and commit.\\
 The instruction at the \textbf{head} of ROB can safely commit, all its predecessor have already committed.
 
 \begin{figure}[h]

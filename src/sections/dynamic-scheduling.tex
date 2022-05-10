@@ -208,16 +208,12 @@ solved without register renaming.\\
 Blank if no pending instructions will write that register.
 \end{description}
 
-Scoreboard:
-RAW ID-read stalls
-WAR WB stalls
-WAW not issued (stall the issue), register renaming not used
-
 \subsection{Tomasulo}\label{subsec:tomasulo}
 \paragraph{Distributed management control} The control logic and the buffers are distributed with FUs (vs centralized in
 scoreboard).
 
-\paragraph{Reservation Stations} Operand buffers are called Reservation Stations.
+\subsubsection{Reservation Stations}
+Operand buffers are called Reservation Stations.
 Each instruction is an entry of a reservation station.
 \begin{figure}[h]
     \centering
@@ -233,16 +229,22 @@ Components:
     \item[Qj,Qk] Pointers to RS that produce Vj,Vk. Zero value = Source op is already available in Vj or Vk.
     \item[Busy] Indicates RS Busy.
 \end{description}
-\textbf{Note:} Only one of V-field or Q-field is valid for each operand.
+\textbf{Note:} Only one of V-field or Q-field is valid for each operand.\\
 
-\paragraph{Register Renaming} The operands of the RSs are replaced by values or pointers.
-This allows to:
+Reservation stations allow for:
 \begin{itemize}
-    \item avoid WAR and WAW hazards
-    \item reservation stations are more than registers, make possible better optimization than a compiler.
+    \item[\textrightarrow] \underline{Register Renaming:} the operands of the RSs are replaced by values or pointers:
+    \begin{itemize}
+        \item avoid WAR and WAW hazards
+        \item \# reservation stations > \# registers, make possible better optimization than a compiler
+    \end{itemize}
+    \item[\textrightarrow] \underline{Loop unrolling} in hardware: permit instruction issue to advance past integer
+    control flow operations (thanks to register renaming)
+    \item[\textrightarrow] \underline{Distribute management control}
 \end{itemize}
 
-\paragraph{Common data bus} Results are dispatched to other FUs through a Common Data Bus (CDB).
+\subsubsection{Common data bus}
+Results are dispatched to other FUs through a Common Data Bus (CDB).
 It offers a \textit{serialized} access to write back.
 It provides values before they are saved into registers, that is data forwarding: it makes a point-to-point connection
 between the FU providing the result and the FU(s) waiting for input.
@@ -255,79 +257,102 @@ The \verb|load| and \verb|store| operations are treated as FUs.
     \label{fig:tomasulo-architecture}
 \end{figure}
 
-\paragraph{Other Components} The Register File and the Store Buffer have a \textit{value} (V) and a \textit{pointer}
-(P) field.
-Q corresponds to the (number of) reservation station producing the result to be stored in RF or store buffer.
-If zero, no active instructions producing the result (RF or store buffer content has the correct value).
+\subsubsection{Other Components}
+The Register File and the Store Buffer have a \textit{value} (V) and a \textit{pointer}
+(Q) field.\\
+Q corresponds to the reservation station(s) producing the result to be stored in RF or store buffer.
+If zero (or \verb|null|), there are no active instructions producing the result (RF or store buffer content has the
+correct value).
+\begin{table}[H]
+    \centering
+    \begin{tabular}{l|ll}
+        \textbf{} & \textbf{V} & \textbf{Q} \\
+        \midrule
+        F0 &  &  \\
+        \midrule
+        F1 &  &  \\
+        \midrule
+        ... &  &  \\
+        \bottomrule
+    \end{tabular}
+    \caption{Register File - RF}
+    \label{tab:register-file}
+\end{table}
 
-Load buffers have an address field (A), and a busy field.
-Store Buffers have also an address field (A).\\
-\textbf{Note:} The address field holds info for memory address calculation for load/store.
+Load and store buffers have an \textit{address} (A) field, and a \textit{busy} field.
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{l|ll}
+        \textbf{} & \textbf{busy} & \textbf{A} \\
+        \midrule
+        Load1 &  &  \\
+        \midrule
+        Load2 &  &  \\
+        \bottomrule
+    \end{tabular}
+    \caption{Load buffer}
+    \label{tab:load-buffer}
+\end{table}
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{l|lll}
+        \textbf{} & \textbf{busy} & \textbf{A} & \textbf{Q}\\
+        \midrule
+        Store1 &  &  &\\
+        \midrule
+        Store2 &  &  &\\
+        \bottomrule
+    \end{tabular}
+    \caption{Store buffer}
+    \label{tab:store-buffer}
+\end{table}
+
+\textbf{Note:} The \textit{address} field holds info for memory address calculation for load/store.
 Initially contains the instruction offset (immediate field), after address calculation stores the effective address.
 
 \subsubsection{Tomasulo Stages}
 \begin{description}
-    \item[ISSUE] Get an instruction I from the queue.
-    If it is an FP op check if a RS is empty (i.e., check for structural hazards).
+    \item[ISSUE] Get an instruction I from the queue.\\
+    If it is an FP op check if a RS is empty (i.e., check for structural hazards).\\
+    If it is a \verb|ld| or \verb|sd| check if the corresponding buffers have a free spot.
 
     \underline{Rename registers:}
     \begin{itemize}
-        \item[] \underline{WAR resolution}\\
+        \item[\textrightarrow] WAR resolution\\
     If I writes Rx, read by an instruction K already issued, K
     knows already the value of Rx or knows what instruction
     will write it.
-    So the RF can be linked to~ I
-        \item[] \underline{WAW resolution}\\
-    Since we use in-order issue, the RF can be linked to~ I
+    So the RF can be linked to~I (with Q pointer).
+        \item[\textrightarrow] WAW resolution\\
+    Since we use in-order issue, the RF can be linked to~I
     \end{itemize}
-
-
 
     \item[EXECUTION] When both operands are ready then execute.
 
-    If not ready, watch the common data bus for results.
-    By delaying execution until operands are available, RAW
-    hazards are avoided.
-    Notice that several instructions could become ready in the
-    same clock cycle for the same FU\@.
+    If not ready, watch the CDB for results: delay execution until operands are available, RAW
+    hazards are avoided.\\
+    \textbf{Note:} multiple instructions could become ready in the
+    same clock cycle for the same FU, start execution only if there's a free FU\@.
 
-    Load and stores: two-step process:
+    Load and stores, two-step process:
     \begin{itemize}[noitemsep]
-        \item First step: compute effective address, place it in load or
-        store buffer.
-        \item Loads in Load Buffer execute as soon as memory unit is
-    available
-        \item Stores in store buffer wait for the value to be stored before
+        \item[\textbf{1.a-b}] compute effective address, place it in load or
+        store buffer (in A field).
+        \item[\textbf{2.a}] Loads in Load Buffer execute as soon as memory unit is
+    available.
+        \item[\textbf{2.b}] Stores in store buffer wait for the value pointed by Q before
     being sent to memory unit.
     \end{itemize}
 
-    \item[WRITE] When result is available: write on Common Data Bus and from there into RF and into all RSs
-    (including store buffers) waiting for this result.
-
-    Stores write data to memory during this stage.
-
-    Mark reservation stations available.
+    \item[WRITE] When result is available, write on Common Data Bus and from there into RF and into all RSs
+    (including store buffers) waiting for this result then mark reservation stations available.\\
+    \textbf{Note:} In the general case of concurrent writes, choose first the one that belongs to the critical path.
 \end{description}
 
-In the general case of concurrent writes choose the one that belongs to the critical path.
 
 \subsubsection{Tomasulo in detail}
-Loads and stores go through a functional unit
-for effective address computation before
-proceeding to effective load and store buffers.
-
-Loads take a second execution step to access
-memory, then go to Write Result to send the
-value from memory to RF and/or RS:
-\begin{center}
-    \textbf{1 cc} (offset + base address) \textbf{+ 1 cc} access memory \textbf{= 2 cc}
-    execution
-\end{center}
-Then at next clock cycle it commits to the CDB\@.
-
-Stores complete their execution in their Write
-Result stage (writes data to memory).
-
 All writes occur in Write Result, simplifying
 Tomasulo algorithm.
 
@@ -338,7 +363,8 @@ Otherwise, a WAR (interchange load-store
 sequence) or a RAW (interchange store-load
 sequence) may result (WAW if two stores are
 interchanged).
-Loads can be reordered freely.
+Loads can be reordered freely.\\
+\textbf{Note:} registers are renamed but memory locations remain the same.
 
 To detect such hazards: data memory
 addresses associated with any earlier memory
@@ -363,90 +389,18 @@ Drawback: amount of hardware required.
 Each RS must contain a fast associative buffer;
 single CDB may limit performance.
 
----
+\subsubsection{Tomasulo Drawbacks}
+\begin{itemize}
+    \item complexity
+    \item large amount of hardware
+    \item many associative store (CDB) at high speed
+    \item performance limited by CDB
+\end{itemize}
+Multiple CDBs $\Longrightarrow$ more FU logic for parallel associative
+stores.
 
-\subsubsection{Tomasulo Loop}
-Why can Tomasulo overlap iterations of loops?
-• Register renaming
-– Multiple iterations use different physical destinations for registers
-(dynamic loop unrolling).
-– Replace static register names from code with dynamic register
-“pointers”
-– Effectively increases size of register file
-– Permit instruction issue to advance past integer control flow
-operations.
-• Crucial: integer unit must “get ahead” of floating
-point unit so that we can issue multiple iterations
-Þ Branch Prediction
-Other idea: Tomasulo building “DataFlow” graph.
-
-Tomasulo Drawbacks
-• Complexity
-– Large amount of hardware
-– delays of 360/91, MIPS 10000, IBM 620?
-• Many associative stores (CDB) at high speed
-• Performance limited by Common Data Bus
-– Multiple CDBs => more FU logic for parallel assoc
-stores
-
-Summary
-• HW exploiting ILP
-– Works when can’t know dependence at compile time.
-– Code for one machine runs well on another
-• Reservations stations: renaming to larger set of registers
-+ buffering source operands
-– Prevents registers as bottleneck
-– Avoids WAR, WAW hazards of Scoreboard
-– Allows loop unrolling in HW
-• Not limited to basic blocks
-(integer units gets ahead, beyond branches)
-• Lasting Contributions
-– Dynamic scheduling
-– Register renaming
-– Load/store disambiguation
-
-
-----
-
-
-Scoreboard vs Tomasulo:
-- structural hazards in scoreboard
-- lack of forwarding in scoreboard
-
-Tomasulo (IBM) versus Scoreboard (CDC)
-• Issue window size=14
-• No issue on structural
-hazards
-• WAR, WAW avoided with
-renaming
-• Broadcast results from FU
-• Control distributed on RS
-• Allows loop unrolling in
-HW
-• Issue window size=5
-• No issue on structural
-hazards
-• Stall the completion for
-WAW and WAR hazards
-• Results written back on
-registers.
-• Control centralized
-through the Scoreboard.
-
-Control \& buffers distributed with Function Units (FU) vs.
-centralized in scoreboard;
-– FU buffers called “reservation stations”;
-    have pending operands
-• Registers in instructions replaced by values or pointers
-to reservation stations(RS); called register renaming ;
-– avoids WAR, WAW hazards
-– More reservation stations than registers, so can do optimizations
-compilers can’t
-• Results to FU from RS, not through registers, over
-Common Data Bus that broadcasts results to all FUs
-• Load and Stores treated as FUs with RSs as well
-• Integer instructions can go past branches, allowing
-FP ops beyond basic block in FP queue
-
-%table comparion scoreboard vs tomasulo
-
+\paragraph{Scoreboard vs Tomasulo}
+\begin{itemize}
+    \item[\textrightarrow] structural hazards in scoreboard
+    \item[\textrightarrow] lack of forwarding in scoreboard
+\end{itemize}

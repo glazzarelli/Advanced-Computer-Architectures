@@ -66,7 +66,10 @@ New hazards arise from variable latencies of different FUs:
 \end{itemize}
 
 A solution would be delay the WB in order to have the same latency for all instructions but that would slow down too
-much single cycle integer operations without forwarding.
+much single cycle integer operations without forwarding.\\
+\textbf{Note:} in~\ref{fig:complex-pipeline} we can see that the MEM stage is absorbed in the EX stage:
+\verb|load| and \verb|store| instructions first they calculate \(offset + base\_address\) and then they access the
+memory.
 
 \paragraph{When it is safe to issue an Instruction?} Things to consider when dispatching an instruction:
 \begin{itemize}

@@ -137,7 +137,7 @@ Unrolling simply replicates the loop body multiple times, adjusting the loop ter
 \textit{overhead} decrease relatively to the loop \textit{body}.
 
 \begin{center}
-    Loop = (loop prolog + \(4\, \times\)\textit{loop body} + loop epilog) \texttimes $\, \frac{n}{4}$ iterations
+    Loop = (\(4\, \times\)\textit{loop body} + loop overhead) \texttimes $\, \frac{n}{4}$ iterations
 \end{center}
 
 \begin{figure}[h]
@@ -148,8 +148,9 @@ Unrolling simply replicates the loop body multiple times, adjusting the loop ter
     \label{fig:loop-unrolling}
 \end{figure}
 
-Note that non FP operations can have multiple schedule locations, e.g., the \verb|ld f2| could be scheduled also in
-the first cycle to M2, but if does not decrease the CPI, it is recommended using a new instruction.
+Note that non FP operations can have multiple schedule locations, e.g. (see ~\ref{fig:loop-unrolling}), the \verb|ld f2|
+could be
+scheduled also in the first cycle to M2, but if does not decrease the CPI, it is recommended using a new instruction.
 In this case we end up with \(\frac{4\text{ FP ops}}{11\text{ cycles}} \approx 0,36\), more than doubling the
 previous result.
 
@@ -172,7 +173,7 @@ We can optimize the results of loop unrolling with \textbf{software pipelining},
 \end{figure}
 
 \begin{center}
-    Software Pipelined Loop = prolog + \textit{iterations} + epilog
+    SW Pipelined Loop = prolog + \textit{n iterations} + epilog
 \end{center}
 
 In this case we have just one prolog and one epilog for all the loop iterations and can be considered $O(1)$ with
