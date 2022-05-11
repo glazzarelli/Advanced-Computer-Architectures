@@ -5,3 +5,7 @@ held by professor Marco D. Santambrogio at Politecnico di Milano.
 
 I created these notes during spring 2022 along the course. 
 These notes may present errors, if you spot any or want to improve these notes, feel free to open an issue and I'll look into it.
+
+Want to offer me a coffee?
+
+[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/donate/?hosted_button_id=WKJJR4THZP2M4)
