@@ -3,6 +3,20 @@
 \section{ILP limits}\label{sec:ilp-limits}
 \subsection{Superscalar}\label{subsec:superscalar}
 Superscalar execution allows multiples-issue and out-of-order execution.
+A superscalar processor can execute more than one instruction during a clock cycle by simultaneously
+dispatching multiple instructions to different execution units on the processor.
+It therefore allows more throughput than would otherwise be possible at a given clock rate.
+Each execution unit is not a separate processor (or a core if the processor is a multicore processor), but an
+execution resource within a single CPU such as an arithmetic logic unit.
+In Flynn's taxonomy, a single-core superscalar processor is classified as an SISD processor, though a single-core
+superscalar processor that supports short vector operations could be classified as SIMD (single instruction stream,
+multiple data streams).
+A multicore superscalar processor is classified as an MIMD processor (multiple instruction streams, multiple data streams).
+While a superscalar CPU is typically also pipelined, superscalar and pipelining execution are considered different
+performance enhancement techniques.
+The former executes multiple instructions in parallel by using multiple execution units, whereas the latter executes
+multiple instructions in the same execution unit in parallel by dividing the execution (instruction) unit into
+different phases.
 
 \paragraph{Key requirements}
 \begin{description}

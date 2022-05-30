@@ -3,15 +3,18 @@
 
 \section{Introduction}\label{sec:introduction}
 
-\subsection{Flynn Taxonomy}\label{subsec:taxonomy}
+\subsection{Flynn Taxonomy}\label{subsec:flynn-taxonomy}
+
 \begin{itemize}
     \item[] \textbf{Single instruction:} only one instruction stream is being acted on by the CPU during any one clock
     cycle.
     \item[] \textbf{Single data:} only one data stream is being used as input during any one clock cycle.
-    \item[] \textbf{Multiples instruction:} every processor may be executing a different instruction stream.
-    \item[] \textbf{Multiple Data:} every processor may be working with a different data stream.
+    \item[] \textbf{Multiples instruction:} every processor may be executing different instruction streams.
+    \item[] \textbf{Multiple Data:} every processor may be working with different data streams.
 \end{itemize}
 
+Based on how many instruction/data streams a processor can be working on, the architecture relying on it can be
+classified as:
 
 \begin{itemize}
     \item SISD - Single Instruction Single Data – Uniprocessor systems
@@ -42,7 +45,8 @@ Type of parallelism:
 \end{itemize}
 
 \subsubsection{Instruction-Level Parallelism}
-Pipelining
+Instruction level parallelism refers to the ability of executing in parallel different steps of different instructions
+(e.g, fetch, decode, execution, etc.) taking place in different physical parts of a processor.
 
 \subsubsection{Thread-Level Parallelism}
 Explicit parallelism implies structuring the applications into concurrent and communicating tasks.
@@ -56,74 +60,77 @@ The most important and frequent are:
 The operating systems implement multitasking differently based on the characteristics of the processor.
 Multithreading categories:
 \begin{itemize}
-    \item single core
-        \subitem superscalar\\
-    A superscalar processor is a CPU that implements a form of parallelism called instruction-level parallelism within a
-    single processor.
-    In contrast to a scalar processor, which can execute at most one single instruction per clock
-    cycle, a superscalar processor can execute more than one instruction during a clock cycle by simultaneously
-    dispatching multiple instructions to different execution units on the processor.
-    It therefore allows more throughput (the number of instructions that can be executed in a unit of time) than would
-    otherwise be possible at a given clock rate.
-    Each execution unit is not a separate processor (or a core if the processor is a multi-core processor), but an
-    execution resource within a single CPU such as an arithmetic logic unit.
-    In Flynn's taxonomy, a single-core superscalar processor is classified as an SISD processor, though a single-core
-    superscalar processor that supports short vector operations could be classified as SIMD (single instruction stream,
-    multiple data streams).
-    A multi-core superscalar processor is classified as an MIMD processor (multiple instruction streams, multiple data streams).
-    While a superscalar CPU is typically also pipelined, superscalar and pipelining execution are considered different performance
-    enhancement techniques.
-    The former executes multiple instructions in parallel by using multiple execution units, whereas the latter executes
-    multiple instructions in the same execution unit in parallel by dividing the execution (instruction) unit into
-    different phases.
-        \subitem multiprocessing\\
+    \item \textbf{single core}
+    \begin{itemize}
+        \item superscalar
+        \item multiprocessing
+    \end{itemize}
 
-    \item single core with multithreading support
-        \subitem Fine grained multithreading:
-            \subsubitem item Switches from one thread to the other at each instruction
-            \subsubitem the execution of more threads is interleaved (often the switching is performed taking turns,
+    \item \textbf{single core with multithreading support} 
+    \begin{itemize}
+        \item Fine grained multithreading
+        \begin{itemize}
+            \item Switches from one thread to the other at each instruction
+            \item the execution of more threads is interleaved (often the switching is performed taking turns,
             skipping one thread if there is a stall)
-            \subsubitem The CPU must be able to change thread at every clock cycle.
+            \item The CPU must be able to change thread at every clock cycle.
             It is necessary to duplicate the hardware resources.
-        \textrightarrow Advantage is it can hide both short and long stalls, since instructions from other threads executed
-    when one thread stalls
-        \textrightarrow Disadvantage is it slows down execution of individual threads, since a thread ready to execute
-    without stalls will be delayed by instructions from other threads
-        \subitem Coarse grained multithreading
-            \subsubitem switching from one thread to another occurs only when there are long stalls – e.g., for a miss on
-    the second level cache.
-            \subsubitem Two threads share many system resources (e.g., architectural registers), the switching from one thread
-    to the next requires different clock cycles to save the context.
-        \textrightarrow Advantage: in normal conditions the single thread is not slowed down\\
-    – Relieves need to have very fast thread-switching\\
-    – Doesn’t slow down thread, since instructions from other threads issued only when the thread encounters a costly
-    stall\\
-        \textrightarrow Disadvantage: for short stalls it does not reduce the throughput loss – the CPU starts the
-    execution of instructions that belonged to a single thread, when there is one stall it is necessary to empty the
-    pipeline before starting the new thread
+        \end{itemize}
+        \textrightarrow \textit{Advantage:} it can hide both short and long stalls, since instructions from other
+        threads is executed when one thread stalls\\
+        \textrightarrow \textit{Disadvantages:} is it slows down execution of individual threads, since a thread ready to
+        execute without stalls will be delayed by instructions from other threads
 
-        TLP (e.g., superscalar) and ILP (pipelining) exploit two different kinds of parallel structure in a program
-        • Could a processor oriented at ILP to exploit TLP?
-        – functional units are often idle in data path designed for ILP because of either stalls or dependences in the code
-        • Could the TLP be used as a source of independent instructions that might keep the processor busy during stalls?
-        • Could TLP be used to employ the functional units that would otherwise lie idle when insufficient ILP exists?
-        \subitem Simultaneous Multithreading (SMT)
-        • The system can be dynamically adapted to the environment, allowing (if possible) the execution of instructions
-        from each thread, and allowing that the instructions of a single thread used all functional units if the other
-        thread incurs in a long latency event.
-        • More threads use the issues possibilities of the CPU at each cycle;
-        ideally, the exploitation of the issues availabilities is limited only by the unbalance between resources
-        requests and availabilities.
 
-    \item multicore
+        \item Coarse grained multithreading
+        \begin{itemize}
+            \item switching from one thread to another occurs only when there are long stalls -– e.g., for a miss on
+            the second level cache.
+            \item Two threads share many system resources (e.g., architectural registers), the switching from one
+            thread to the next requires different clock cycles to save the context.
+        \end{itemize}
+        \textrightarrow \textit{Advantages:} in normal conditions the single thread is not slowed down\\
+        – Relieves need to have very fast thread-switching\\
+        – Doesn’t slow down the single thread, since instructions from other threads are issued only when the thread
+        encounters a costly stall\\
+        \textrightarrow \textit{Disadvantages}: for short stalls it does not reduce the throughput loss\\
+        – the CPU starts the execution of instructions that belonged to a single thread, when there is one stall it is
+        necessary to empty the pipeline before starting the new thread
+
+        \item Simultaneous Multithreading (SMT)
+        \begin{itemize}
+            \item The system can be dynamically adapted to the environment, allowing (if possible) the execution
+            of instructions from each thread, and allowing that the instructions of a single thread uses all
+            functional units if the other thread incurs in a long latency event.
+            \item More threads grant more (instruction) issues possibilities by the CPU at each cycle;
+            ideally, the exploitation of the issues availabilities is limited only by the unbalance between resources
+            requests and availabilities.
+        \end{itemize}
+    \end{itemize}
+
+    \item \textbf{multicore}
+    Multicore architectures broaden the prospective, allowing for different type of architectures to interact, trying
+    to exploit the best from each one -- e.g, the combination of cpu and gpu in modern computers.
+    A multicore architecture can be:
+    \begin{itemize}
+        \item homogeneous: duplication of the same core
+        \item heterogeneous: different processing architecture interacting
+    \end{itemize}
 \end{itemize}
 
-\begin{figure}
+\begin{figure}[h]
     \centering
     \includegraphics[scale=0.25]{images/multithreaded-categories}
     \caption{Multithreaded categories}
     \label{fig:multithreaded-categories}
 \end{figure}
 
-
-
+TLP (e.g., superscalar) and ILP (pipelining) exploit two different forms of parallelism in a program, the
+following questions arise:
+\begin{itemize}
+    \item Could a processor oriented at ILP exploit TLP too?
+    \item Functional units are often idle in data path designed for ILP because of either stalls or dependencies in
+    the code.
+    Could the TLP be used as a source of independent instructions that might keep the processor busy during stalls?
+    \item Could TLP be used to employ the functional units that would otherwise lie idle when insufficient ILP exists?
+\end{itemize}

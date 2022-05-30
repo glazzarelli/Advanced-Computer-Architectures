@@ -20,6 +20,7 @@
 \usepackage{amsfonts}
 \usepackage{wasysym}
 \usepackage{adjustbox}
+\usepackage{biblatex}
 %\usepackage{latexsymb}
 
 %\title{Advanced Computer Architecture \\ \large Professor Marco D. Santambrogio}
@@ -33,7 +34,7 @@
     \tableofcontents
     \clearpage
     \setlist{topsep=4pt,itemsep=1pt,partopsep=2pt, parsep=2pt}
-    %\input{sections/introduction}
+    \input{sections/introduction}
     \input{sections/performance-and-cost.tex}
     \input{sections/pipeline}
     \input{sections/data-hazards}
@@ -45,5 +46,10 @@
     \input{sections/hw-speculation}
     \input{sections/register-renaming}
     \input{sections/ilp-limits}
+    \input{sections/multiprocessors.tex}
+    %\input{sections/gpu.tex}
+    \input{sections/mimd.tex}
+
+
 
 \end{document}
