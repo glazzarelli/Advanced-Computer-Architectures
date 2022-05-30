@@ -221,4 +221,96 @@ Multiprocessor systems can have single
 addressing space and distributed physical
 memory.
 
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale = 0.43]{images/address-space-vs-physical-memory-org}
+    \caption{Single shared space vs physical memory}
+    \includegraphics[scale = 0.40]{images/address-space-vs-physical-memory-org-1}
+    \caption{Multiple private addresses vs physical memory }
+    \label{fig:address-space-vs-physical-memory-org}
+\end{figure}
 
+
+\subsection{Programming Model}\label{subsec:programming-model}
+
+\subsubsection{Shared Memory}
+The program is a collection of threads of control, each thread:
+\begin{itemize}
+    \item can be created dynamically, mid execution, in some languages.
+    \item has a set of \textit{private} variables, e.g., local stack variables
+    \item also a set of \textit{shared} variables, e.g., static variables, shared common blocks, or global heap
+\end{itemize}
+
+Processes communication:
+\begin{itemize}
+    \item implicitly by writing and reading shared variables
+    \item coordination by synchronizing on shared variables
+\end{itemize}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width = \linewidth]{images/shared-memory-model}
+    \caption{Shared memory}
+    \label{fig:shared-memory-model}
+\end{figure}
+
+\paragraph{Advantages}
+\begin{itemize}
+    \item implicit communication (loads/stores)
+    \item low overhead when cached
+\end{itemize}
+
+\paragraph{Disadvantages}
+\begin{itemize}
+    \item complex to build in way that scales well -- e.g., distance between core and memory may become too much
+    cutting down performance
+    \item requires synchronization operations
+    \item hard to control data placement within caching system
+\end{itemize}
+
+\subsubsection{Message Passing}
+The program consist of a collection of \textbf{named} processes:
+\begin{itemize}
+    \item usually fixed at program startup time
+    \item thread of control plus local address space, no shared data
+    \item logically shared data is partitioned over local processes
+\end{itemize}
+
+Processes communication:
+\begin{itemize}
+    \item explicitly by send/receive pairs
+    \item coordination is implicit in every communication event
+    \item MPI (Message Passing Interface) is the most commonly used SW
+\end{itemize}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width = \linewidth]{images/message-passing-model}
+    \caption{Message passing}
+    \label{fig:message-passing-model}
+\end{figure}
+
+\paragraph{Advantages}
+\begin{itemize}
+    \item explicit communication (sending/receiving of messages)
+    \item easier to control data placement (no automatic caching)
+\end{itemize}
+
+\paragraph{Disadvantages}
+\begin{itemize}
+    \item message passing overhead can be quite high
+    \item more complex to program
+    \item introduces question of reception technique (interrupts/polling)
+\end{itemize}
+
+\paragraph{Massively Parallel Processors Problems}
+\begin{itemize}
+    \item all data must be handled by software: cannot retrieve remote data except with message request/reply
+    \item message passing has high software overhead:
+    \begin{itemize}
+        \item early machine had to invoke OS on each message
+        \item even user level access to network interface has dozens of cycle overhead
+        \item sending messages can be cheap (just like stores)
+        \item receiving messages is expensive, need to poll or interrupt
+    \end{itemize}
+\end{itemize}
