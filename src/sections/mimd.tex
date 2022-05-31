@@ -32,7 +32,7 @@ the-shelf microprocessors these can be combined in the same system.
 
 \textbf{Note:} parallelism is identified by the software.\\
 
-\subsection{MIMD machines classes}\label{subsec:mimd-machines}
+\subsection{Memory architecture}\label{subsec:memory-architecture}
 Existing MIMD machines fall into 2 classes, depending on the number
 of processors involved, which in turn dictates a memory organization
 and interconnection strategy.
@@ -56,7 +56,7 @@ and interconnection strategy.
     \item at most few dozen processor chips (< 100 cores)
     \item large caches, single memory multiple banks
     \item often called symmetric multiprocessors (SMP) and the
-    style of architecture called Uniform Memory Access (UMA)
+    style of architecture called Uniform Memory Access (UMA), see section~\ref{subsec:bus-based-symmetric-shared-memory}
 \end{itemize}
 
 \begin{figure}[h]
@@ -308,9 +308,165 @@ Processes communication:
     \item all data must be handled by software: cannot retrieve remote data except with message request/reply
     \item message passing has high software overhead:
     \begin{itemize}
-        \item early machine had to invoke OS on each message
+        \item early machines had to invoke OS on each message
         \item even user level access to network interface has dozens of cycle overhead
         \item sending messages can be cheap (just like stores)
         \item receiving messages is expensive, need to poll or interrupt
     \end{itemize}
 \end{itemize}
+
+\subsection{Bus-based symmetric shared memory}\label{subsec:bus-based-symmetric-shared-memory}
+The most popular architecture till now sees each core and its own cache memory, with a simple networking solution, the
+bus, which connects processors with each other and to the shared memory.
+
+\textbf{Note:} here we refer to \textit{physical} shared memory architecture (UMA).
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale = 0.45]{images/bus-based-symmetric-shared-memory}
+    \caption{Bus-based symmetric multiprocecessors}
+    \label{fig:bus-based-symmetric-shared-memory}
+\end{figure}
+
+Attractive as throughput servers and for parallel programs:
+\begin{itemize}
+    \item Fine-grain resource sharing
+    \item Uniform access via loads/stores
+    \item Automatic data movement and coherent replication in caches
+    \item Cheap and powerful extension
+\end{itemize}
+It uses the normal uni-processor mechanisms to access data, the key to make it viable is the extension of memory
+hierarchy to support multiple processors.
+
+\paragraph{Shared memory machines} Two main categories:
+\begin{itemize}
+    \item non cache coherent
+    \item hardware cache coherent
+\end{itemize}
+Will work with any data, but might be slow, we can choose to optimize only critical portions of code.
+Load and store instructions used to communicate data: no OS involvement \textrightarrow low software overhead.
+Usually there are some special synchronization primitives.
+In large scale systems, the logically distributed shared memory is implemented as physically distributed memory
+modules.\footnote{Some notions might be wrong in this section, double check}
+
+\subsection{Cache coherence}\label{subsec:cache-coherence}
+Shared memory architectures cache both \textbf{private data}, used by a single processor, and \textbf{shared data},
+used by multiple processors to provide communication.
+When shared data is cached, the shared valued may be replicated in multiple caches.
+In addition to the reduction in access latency and required memory bandwidth, this replication provides a reduction
+of shared data contention when multiple processors have to read simultaneously the same data.
+Private processors caches create a problem:
+\begin{itemize}
+    \item copies of a variable can be present in multiple caches
+    \item a write by one processor may not become visible to others
+\end{itemize}
+The use of multiple copies of the same data introduces a new problem: cache coherency.
+
+\paragraph{Writing policies}
+When a system writes data to cache, it must at some point write that data to the backing store as well.
+The timing of this write is controlled by what is known as the write policy.
+There are two basic writing approaches:
+\begin{itemize}
+    \item \textbf{write-through}: write is done synchronously both to the cache and to the backing store
+    \item \textbf{write-back} (also called write-behind): initially, writing is done only to the cache.
+    The write to the backing store is postponed until the modified content is about to be replaced by another cache block.
+\end{itemize}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale = 0.4]{images/cache-coherence-problem}
+    \caption{Cache coherence problem}
+    \label{fig:cache-coherence-problem}
+\end{figure}
+\textbf{Note:} processors see different values for $u$ after event 3.
+With write back caches, the value written back to memory depends on which cache flushes or writes back values first:
+processes accessing main memory may see very stale value.
+
+\paragraph{What does coherency means}
+Informal definition: \textit{"any read must return the most recent write} \textrightarrow too strict and difficult to
+implement.\\
+A better definition: \textit{any write must eventually be seen by a read}, all write are seen in \textbf{serialized
+order}, that is two write to the same location by any two processors are seen in the same order by all processors
+plus the latest (in time) will be seen (in memory).
+If P writes x and P1 reads it, P’s write will be seen by P1 if the read
+and write are sufficiently far apart and no other writes to x occur
+between the two accesses: \textbf{propagation of writes} after a certain amount of time.
+
+\paragraph{When a written value will be seen?}
+We cannot require that a read of x by P1 can
+instantaneously see the write of x by another
+processor that precedes by a small amount of time.
+This is a problem of \textbf{memory consistency}, coherency and consistency are complementary:
+\begin{itemize}
+    \item coherence defines the behavior of reads and writes to the same memory location
+    \item consistency defines the behavior of reads and write with respect to accesses to other memory locations
+\end{itemize}
+Assumptions for now:
+\begin{itemize}
+    \item a write does not complete (and allow the next write to occur) until all processors have seen the effect of
+    that write
+    \item the processor does not change the order of any write with respect to any other memory access
+\end{itemize}
+
+\paragraph{Coherent caches}
+A program running on multiple processors will normally
+have copies of the same data in several caches.
+In a coherent multiprocessor the caches provide both
+\textbf{migration} and \textbf{replication} of shared data items:
+\begin{itemize}
+    \item Migration: a data item can be moved to a local cache
+    and used there in a transparent fashion, reduces both the latency to access a shared data item that
+    is allocated remotely and the \textit{bandwidth demand} on the shared memory
+    \item Replication for shared data that are being
+    simultaneously read: caches make a copy of the data
+    item in the local cache, reduces both latency of access and \textit{contention for a shared read}
+\end{itemize}
+
+\paragraph{Potential solutions} HW-based solutions to maintain coherency: cache-coherence protocols.
+Key issue: implement a cache coherent protocol in multiprocessors needs tracking the status of any sharing of a data
+block.
+Two classes of protocols:
+\begin{itemize}
+    \item snooping protocols
+    \item directory-based protocols
+\end{itemize}
+
+
+\subsubsection{Snooping Protocols}
+\begin{itemize}
+    \item[\textrightarrow] All cache controllers monitor (snoop) on the bus to
+    determine whether or not they have a copy of the block
+    requested on the bus and respond accordingly.
+    \item[\textrightarrow] Every cache that has a copy of the shared block, also
+    has a copy of the sharing status of the block, and no
+    centralized state is kept.
+    \item[\textrightarrow]
+    Send all requests for shared data to all processors.
+    \item [\textrightarrow] Require broadcast, since caching info is at processors.
+    \item [\textrightarrow] Suitable for Centralized Shared-Memory Architectures,
+    and in particular for small scale multiprocessors with
+    single shared bus.
+\end{itemize}
+
+\paragraph{Snoopy cache Goodman 1983}
+Idea: have cache watch (or snoop upon) DMA\footnote{Direct Memory Access}, and then \textit{do the right thing}.
+Snoopy caches tags are dual-ported:
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale = 0.4]{images/snoopy-cache-goodman}
+    \caption{Snoopy cache goodman}
+    \label{fig:snoopy-cache-goodman}
+\end{figure}
+
+Bus is a broadcast medium and caches know what
+they have.
+Cache controller “snoops” all transactions on the
+shared bus:
+\begin{itemize}
+    \item relevant transaction if the cache contains that block
+    \item take action to ensure coherence (\textrightarrow invalidate, update, or supply value):
+    \subitem depends on state of the block and the protocol
+\end{itemize}
+
+
