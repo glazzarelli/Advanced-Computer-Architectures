@@ -141,7 +141,7 @@ data from statically stored higher-level scene data.
 
 \begin{figure}[h]
     \centering
-    \includegraphics[scale = 0.]{images/procedural-synthesis}
+    \includegraphics[width = \linewidth]{images/procedural-synthesis}
     \caption{Procedural synthesis}
     \label{fig:procedural-synthesis}
 \end{figure}
@@ -469,4 +469,212 @@ shared bus:
     \subitem depends on state of the block and the protocol
 \end{itemize}
 
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\linewidth]{images/cache-snooping-protocol}
+    \caption{Cache snooping}
+    \label{fig:cache-snooping}
+\end{figure}
 
+Since every bus transaction checks the cache
+address tags, this checking can interfere with the
+processor operations.
+When there is interference, the processor will likely
+stall because the cache is unavailable.
+To reduce the interference with the processor’s
+accesses to the cache, we duplicate the address
+tag portion of the cache (not the whole cache) for
+snooping activities.
+In practice, an extra read port is added to the
+address tag portion of the cache, hence the dual-ported cache.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\linewidth]{images/dual-ported-cache}
+    \caption{Dual-ported cache}
+    \label{fig:dual-ported-cache}
+\end{figure}
+
+\paragraph{Types of snooping protocols}
+Snooping Protocols are of two types depending
+on what happens on a write operation:
+\begin{itemize}
+    \item Write-Invalidate Protocol
+    \item Write-Update or Write-Broadcast Protocol
+\end{itemize}
+
+\subsubsection{Write-invalidate Protocol}
+The writing processor issues an invalidation signal
+over the bus to cause all copies in other caches to
+be invalidated before changing its local copy.
+The writing processor is then free to update the
+local data until another processor asks for it.
+All caches on the bus check to see if they have a
+copy of the data and, if so, they must invalidate the
+block containing the data.
+This scheme allows multiple readers but only a
+single writer.
+This scheme uses the bus only on the first write
+to invalidate the other copies.
+Use bus itself to serialize: write cannot complete until bus access is obtained
+Subsequent writes do not result in bus activity.
+This protocol provides similar benefits to write-
+back protocols in terms of reducing demands
+on bus bandwidth.
+Read Miss: snoop in caches to find the most
+recent copy.
+
+\subsubsection{Write-update Protocol}
+The writing processor broadcasts the new data over
+the bus;
+all caches check if they have a copy of the
+data and, if so, all copies are updated with the new
+value.
+This scheme requires the continuous broadcast of
+writes to shared data (while write-invalidate deletes
+all other copies so that there is only one local copy
+for subsequent writes).
+This protocol is like write-through because all writes
+go over the bus to update copies of the shared
+data.
+This protocol has the advantage of making the new
+values appear in caches sooner \textrightarrow reduced latency.
+Read Miss: memory always up-to-date.
+
+\textbf{Note:} writing policies and snooping protocols are orthogonal concepts: a policy -- e.g, write back --
+can be combined with any of the two snooping protocols.
+The latter is about cache coherence the former about when to schedule writing transitions.
+
+\subsubsection{Update vs Invalidate}
+Question about program behavior: is a block written by one processor later read by others before it is overwritten?
+\begin{table}[h]
+    \centering
+    \begin{tabular}{l|p{0.37\linewidth}p{0.37\linewidth}}
+        \toprule
+         & \textbf{Invalidate} & \textbf{Update} \\
+        \midrule
+        yes & readers will take a miss & avoids misses on later references \\
+        \midrule
+        no & multiple writes without additional traffic, also clears out copies that will never be used again &
+        multiple useless updates \\
+        \bottomrule
+    \end{tabular}
+    \caption{Update vs Invalidate}
+    \label{tab:update-vs-invalidate}
+\end{table}
+For a better performance we need to look at program reference patterns and hardware complexity.
+
+Most part of commercial cache-based
+multiprocessors uses:
+\begin{itemize}
+    \item Write-Back Caches to reduce bus traffic and
+allow more processors on a single bus.
+    \item Write-Invalidate Protocol to preserve bus
+bandwidth
+\end{itemize}
+
+The write serialization still due to bus serializing request: a write to a shared data item cannot actually
+complete until it obtains bus access.
+
+\paragraph{Write back cache}
+How to identify the most recent data value of a cache block in case of cache miss?
+It could be in (another) cache or in memory.
+We use the same snooping scheme both for cache misses and writes:
+\begin{itemize}
+    \item each processor snoops every address placed on the bus
+    \item if a processor finds that it has a dirty copy of the
+    requested cache block, it provides the cache block
+    in response to the read request
+    \item memory access is aborted
+\end{itemize}
+
+\paragraph{Write back cache, write invalidate}
+Each \textit{block of memory} is in one of three states:
+\begin{itemize}
+    \item \textbf{Clean} in all cache and up-to-date in memory (shared)
+    \item \textbf{Dirty} in exactly one cache (exclusive)
+    \item not in any caches
+\end{itemize}
+Each \textit{cache block} can be in one of three states:
+\begin{itemize}
+    \item \textbf{Clean} (or shared)(read only): the block is clean, not modified, and can be read
+    \item \textbf{Dirty} (or modified or Exclusive): cache has only copy, its writeable, and dirty (block cannot be
+    shared)
+    \item \textbf{Invalid}: block contains no valid data
+\end{itemize}
+
+\paragraph{MSI invalidate protocol}
+Three states:
+\begin{itemize}
+    \item \textbf{M}: "Modified"
+    \item \textbf{S}: "Shared"
+    \item \textbf{I}: "Invalid"
+\end{itemize}
+Read (\textit{PrRd}) obtains block in \textit{shared}, even if there is only the cache copy.\\
+Before writing a process must obtain exclusive ownership:
+\begin{itemize}
+    \item \textit{BusRdx} causes others to invalidate (demote)
+    \item if M in another cache, it will flush
+    \item we need to send \textit{BusRdx} even if hit is in S (promote to M -- upgrade)
+\end{itemize}
+What about replacement?
+S \textrightarrow I, M\textrightarrow I\@.
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.7\linewidth]{images/msi-protocol}
+    \caption{MSI protocol}
+    \label{fig:msi-protocol}
+\end{figure}
+
+\paragraph{Complications for the basic MSI protocol}
+Operations (detect a miss, acquire bus, receive a response) are not atomic: creates the possibility of deadlock and
+races.
+One solution would be the processors that send the invalidate can hold the bus until other processors receive the
+invalidate.
+
+\paragraph{MESI write-invalidate protocol}
+To prevent the need to write invalidate on a write we can add an exclusive state to indicate that the clean block is
+in only one cache (owned state).
+Each cache block can be in four states:
+\begin{itemize}
+    \item \textbf{Modified:} the block is dirty and cannot be shared, the cache has only copy, its writable
+    \item \textbf{Exclusive:} the block is clean and cache has only copy
+    \item \textbf{Shared:} the block is clean and other copies of the block are in cache
+    \item \textbf{Invalid:} block contains no valid data
+\end{itemize}
+The exclusive state lets us distinguish between exclusive (writable) and owned (written).
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\linewidth]{images/mesi-protocol-states}
+    \caption{MESI states}
+    \label{fig:mesi-protocol-states}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.7\linewidth]{images/mesi-protocol}
+    \caption{MESI protocol}
+    \label{fig:mesi-protocol}
+\end{figure}
+
+\textit{BusRd(S)} means shared line asserted on BusRd transaction.
+Flush if there is a cache-to-cache transfer: only one cache flushes data.
+Replacement:
+S\textrightarrow I can happen
+without telling other
+caches, E \textrightarrow I, M\textrightarrow I\@.\\
+In both S and E, the memory has an up-to-date
+version of the data.
+A write to a E block does not require to send the
+invalidation signal on the bus, since no other
+copies of the block are in cache.
+A write to a S block implies the invalidation of
+the other copies of the block in cache.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\linewidth]{images/mesi-automata}
+    \caption{MESI automaton}
+    \label{fig:mesi-automaton}
+\end{figure}

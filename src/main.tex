@@ -5,7 +5,8 @@
 \documentclass[9pt, twocolumn, twoside]{article}
 
 % Packages
-\usepackage[a4paper, total={7in, 10in}]{geometry}\usepackage{amsmath}
+\usepackage[a4paper, total={7in, 10in}]{geometry}
+\usepackage{amsmath}
 \usepackage{graphicx}
 \usepackage{textcomp}
 \usepackage[utf8]{inputenc}
@@ -23,16 +24,18 @@
 \usepackage{biblatex}
 %\usepackage{latexsymb}
 
-%\title{Advanced Computer Architecture \\ \large Professor Marco D. Santambrogio}
+\title{Advanced Computer Architectures \\ \large Professor Marco D. Santambrogio}
 %\author{Gabriele Lazzarelli}
-%\date{2022}
+\date{Spring 2022}
 
 \begin{document}
-    %\maketitle
-    %\noindent\makebox[\textwidth]{\includegraphics[width= 8cm]{images/LogoPolimi.png}}
+    \maketitle
+    \noindent\makebox[\textwidth]{\includegraphics[width= 8cm]{images/LogoPolimi.png}}
 
+    \clearpage
     \tableofcontents
     \clearpage
+
     \setlist{topsep=4pt,itemsep=1pt,partopsep=2pt, parsep=2pt}
     \input{sections/introduction}
     \input{sections/performance-and-cost.tex}
@@ -49,7 +52,4 @@
     \input{sections/multiprocessors.tex}
     %\input{sections/gpu.tex}
     \input{sections/mimd.tex}
-
-
-
 \end{document}
