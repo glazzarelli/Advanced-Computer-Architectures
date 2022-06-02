@@ -133,43 +133,6 @@ In addition to the these two threads, the game
 could make use of separate threads for handling
 physics, artificial intelligence, player input, etc.
 
-
-\subsection{Procedural synthesis}\label{subsec:procedural-synthesis}
-Procedural synthesis about making optimal use of system bandwidth
-and main memory by dynamically generating lower-level geometry
-data from statically stored higher-level scene data.
-
-\begin{figure}[h]
-    \centering
-    \includegraphics[width = \linewidth]{images/procedural-synthesis}
-    \caption{Procedural synthesis}
-    \label{fig:procedural-synthesis}
-\end{figure}
-
-For 3D games:
-\begin{itemize}
-    \item Artists use a 3D rendering program to produce content for the game
-    \item Each model is translated into a collection of polygons
-    \item Each polygons is represented in the computer's memory as collections of vertices
-\end{itemize}
-When the computer is rendering a scene in a game in real-time:
-\begin{itemize}
-    \item Models that are being displayed on the screen start out in main
-memory as stored vertex data
-    \item That vertex data is fed from main memory into the GPU where it is then rendered into a 3D image and output
-    to the monitor as a sequence of frames.
-\end{itemize}
-
-\paragraph{Limitations} there are two problems:
-\begin{itemize}
-    \item The costs of creating art assets for a 3D game are
-going through the roof along with the size and
-complexity of the games themselves
-    \item Console hardware's limited main memory sizes and
-limited bus bandwidth
-\end{itemize}
-
-
 \subsection{Memory Address Space Model}\label{subsec:memory-address-space-model}
 How do parallel processors share data?
 We already talked about how the physical memory implementation divides the \textit{machines} in two classes, now we 
