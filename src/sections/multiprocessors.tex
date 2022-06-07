@@ -7,8 +7,8 @@ Till now we considered single cores architectures and how to increase the ILP in
 \begin{figure}[h]
     \centering
     \includegraphics[scale = 0.4]{images/superscalar-vs-multithreading}
-    \caption{Superscalar vs multithreading}
-    \label{fig:superscalar-vs-multithreading}
+    \caption{Superscalar and multithreading}
+    \label{fig:superscalar-and-multithreading}
 \end{figure}
 
 \paragraph{Beyond ILP}
@@ -47,6 +47,17 @@ some communication policies between cores.
 processing elements that cooperates and
 communicate to solve large problems fast”}\footnote{Almasi and Gottlieb, Highly Parallel Computing, 1989}
 
+Parallelism in hardware:
+\begin{itemize}
+    \item parallelism in a uniprocessor:
+    \begin{itemize}
+        \item pipelining
+        \item superscalar, VLIM, etc.
+    \end{itemize}
+    \item SIMD instructions, vector processor, GPUs
+    \item \textbf{multiprocessors}
+\end{itemize}
+
 \subsubsection{SISD}
 A serial (non-parallel) computer with deterministic execution, i.e., the architectures seen till now, the oldest and
 most common type of computer.
@@ -58,7 +69,7 @@ most common type of computer.
 \end{figure}
 
 \subsubsection{MISD}
-Another parallel computer, where a single data stream is fed into multiple processing units.
+A parallel computer, where a single data stream is fed into multiple processing units.
 Each processing unit operates on the data independently via independent instruction streams.
 Niche use cases such as regex expressions.
 \begin{figure}[H]
@@ -71,10 +82,10 @@ Niche use cases such as regex expressions.
 \subsubsection{SIMD}
 A type of parallel computer, where all processing units execute the same instruction at any given clock cycle, each
 one operates on a different data stream.
-Data pipelining into processing unit, useful for example for operations on matrices.
-Best suited for specialized problems characterized by a high degree of regularity, such as graphics/image processing
-(GPUs) or machine learning.
-Processors are typically special-purpose.
+We have \textit{data pipelining} into processing unit -- e.g., useful for operations on matrices.
+It is best suited for specialized problems characterized by a high degree of regularity, such as graphics/image
+processing (GPUs) or machine learning.
+SIMD processors are typically special-purpose.
 There is only one single instruction memory and control processor to fetch and dispatch instructions.
 
 \begin{figure}[H]

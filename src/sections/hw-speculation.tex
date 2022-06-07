@@ -57,7 +57,7 @@ The recovery technique for both is \textbf{in-order commit}.
     If the reservation station \textcolor{red}{and reorder buffer slot} are free: issue instruction, send
     operands, \textcolor{red}{reorder buffer number for destination.}
     \item[Execution] operate on operands when ready.\\
-    If not ready, watch CDB for result: when both are in the reservation station, execute then check for RAW.
+    If not ready, watch CDB for result: when both are in the reservation station, execute then check for RAW\@.
     \item[Write result] finish execution.\\
     Write on Common Data Bus to all awaiting FUs \textcolor{red}{and reorder buffer}.
     Mark the reservation station available.

@@ -55,7 +55,7 @@ and interconnection strategy.
 \begin{itemize}
     \item at most few dozen processor chips (< 100 cores)
     \item large caches, single memory multiple banks
-    \item often called symmetric multiprocessors (SMP) and the
+    \item often called \textbf{symmetric mutliprocessors} (SMP) and the
     style of architecture called Uniform Memory Access (UMA), see section~\ref{subsec:bus-based-symmetric-shared-memory}
 \end{itemize}
 
@@ -335,6 +335,37 @@ There are two basic writing approaches:
     The write to the backing store is postponed until the modified content is about to be replaced by another cache block.
 \end{itemize}
 
+A write-back cache is more complex to implement, since it needs to track which of its locations have been written
+over, and mark them as dirty for later writing to the backing store.
+The data in these locations are written back to
+the backing store only when they are evicted from the cache, an effect referred to as a lazy write.
+For this reason, a read miss in a write-back cache (which requires a block to be replaced by another) will often
+require two memory accesses to service: one to write the replaced data from the cache back to the store, and then one
+to retrieve the needed data.\\
+Since no data is returned to the requester on write operations, a decision needs to be made on write misses, whether
+or not data would be loaded into the cache.
+This is defined by these two approaches:
+\begin{itemize}
+    \item Write allocate (also called fetch on write): data at the missed-write location is loaded to cache, followed
+    by a write-hit operation.
+    In this approach, write misses are similar to read misses.
+    \item  No-write allocate (also called write-no-allocate or write around): data at the missed-write location is
+    not loaded to cache, and is written directly to the backing store.
+    In this approach, data is loaded into the cache on read misses only.
+\end{itemize}
+Both write-through and write-back policies can use either of these write-miss policies, but usually they are paired in this way:
+\begin{itemize}
+    \item A write-back cache uses write allocate, hoping for subsequent writes (or even reads) to the same location,
+    which is now cached.
+    \item  A write-through cache uses no-write allocate.
+    Here, subsequent writes have no advantage, since they still need to be written directly to the backing store.
+\end{itemize}
+
+Entities other than the cache may change the data in the backing store, in which case the copy in the cache may
+become out-of-date or stale.
+Alternatively, when the client updates the data in the cache, copies of those data in other caches will become stale.
+Communication protocols between the cache managers which keep the data consistent are known as coherency protocols.
+
 \begin{figure}[h]
     \centering
     \includegraphics[scale = 0.4]{images/cache-coherence-problem}
@@ -346,10 +377,10 @@ With write back caches, the value written back to memory depends on which cache 
 processes accessing main memory may see very stale value.
 
 \paragraph{What does coherency means}
-Informal definition: \textit{"any read must return the most recent write} \textrightarrow too strict and difficult to
+Informal definition: \textit{any read must return the most recent write} \textrightarrow too strict and difficult to
 implement.\\
-A better definition: \textit{any write must eventually be seen by a read}, all write are seen in \textbf{serialized
-order}, that is two write to the same location by any two processors are seen in the same order by all processors
+A better definition: \textit{any write must eventually be seen by a read}, all writes are seen in \textbf{serialized
+order}, that is two writes to the same location by any two processors are seen in the same order by all processors
 plus the latest (in time) will be seen (in memory).
 If P writes x and P1 reads it, P’s write will be seen by P1 if the read
 and write are sufficiently far apart and no other writes to x occur

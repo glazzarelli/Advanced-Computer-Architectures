@@ -9,44 +9,53 @@
     \item[] \textbf{Single instruction:} only one instruction stream is being acted on by the CPU during any one clock
     cycle.
     \item[] \textbf{Single data:} only one data stream is being used as input during any one clock cycle.
-    \item[] \textbf{Multiples instruction:} every processor may be executing different instruction streams.
-    \item[] \textbf{Multiple Data:} every processor may be working with different data streams.
+    \item[] \textbf{Multiples instruction:} (every) processor may be executing different instruction streams.
+    \item[] \textbf{Multiple Data:} (every) processor may be working with different data streams.
 \end{itemize}
 
 Based on how many instruction/data streams a processor can be working on, the architecture relying on it can be
 classified as:
 
 \begin{itemize}
-    \item SISD - Single Instruction Single Data – Uniprocessor systems
+    \item SISD - Single Instruction Single Data\\
+    Uniprocessor systems, it is the oldest architecture and provides deterministic execution.
     \item MISD - Multiple Instruction Single Data\\
     No practical configuration and no commercial systems.
     \item SIMD - Single Instruction Multiple Data\\
+    Best suited for specialized problems characterized by a high degree of regularity, such as graphics/image
+    processing.
     Simple programming model, low overhead, flexibility, custom integrated circuits.
     \item MIMD - Multiple Instruction Multiple Data\\
+    Nowadays, the most common type of parallel computer, execution can be synchronous or asynchronous,
+    deterministic or non-deterministic.
     Scalable, fault tolerant, off-the-shelf micros.
 \end{itemize}
 
 \subsection{Parallelism}\label{subsec:parallelism}
-The SISD architecture is the oldest and provides deterministic execution.
 To account for events happening simultaneously we have to introduce parallelism.
-
-The SIMD, parallel architecture, with multiple data each processing unit can operate on a different data element.
-Best suited for specialized problems characterized by a high degree of regularity, such as graphics/image processing.
-
-The MIMD, nowadays, the most common type of parallel computer, execution can be synchronous or asynchronous,
-deterministic or non-deterministic.\\
-
-Type of parallelism:
+Type of parallelism\footnote{the examples provided for each type of parallelism are the ones which we will focus on,
+    keep in mind that an architecture can implement different type of parallelism}:
 \begin{itemize}
-    \item DLP, data-level parallelism (SIMD)
-    \item ILP, instruction-level parallelism (SIMD + pipeline)
-    \item TLP, thread-level parallelism (MIMD)
-    \item RLP, request-level parallelism (MIMD)
+    \item DLP, data-level parallelism -- SIMD
+    \item ILP, instruction-level parallelism -- SISD + pipeline
+    \item TLP, thread-level parallelism -- MIMD
+    \item RLP, request-level parallelism -- MIMD
 \end{itemize}
 
+
+\subsubsection{Data-level Parallelism}
+Data parallelism is parallelization across multiple processors in parallel computing environments.
+It focuses on distributing the data across different nodes, which operate on the data in parallel.
+It can be applied on regular data structures like arrays and matrices by working on each element in parallel.
+
 \subsubsection{Instruction-Level Parallelism}
-Instruction level parallelism refers to the ability of executing in parallel different steps of different instructions
-(e.g, fetch, decode, execution, etc.) taking place in different physical parts of a processor.
+Instruction-level parallelism (ILP) is the parallel or simultaneous execution of a sequence of instructions in a
+computer program.
+Precisely, it is the simultaneous execution of different steps of different instructions
+(e.g, fetch, decode, execution, etc.) taking place in different physical parts of a processor, which is different
+from concurrent execution of instructions from different threads.
+In ILP there is a single specific thread of execution of a process.\\
+See chapter~\ref{sec:pipeline} for more details.
 
 \subsubsection{Thread-Level Parallelism}
 Explicit parallelism implies structuring the applications into concurrent and communicating tasks.
@@ -70,11 +79,11 @@ Multithreading categories:
     \begin{itemize}
         \item Fine grained multithreading
         \begin{itemize}
-            \item Switches from one thread to the other at each instruction
+            \item switches from one thread to the other at each instruction
             \item the execution of more threads is interleaved (often the switching is performed taking turns,
             skipping one thread if there is a stall)
-            \item The CPU must be able to change thread at every clock cycle.
-            It is necessary to duplicate the hardware resources.
+            \item the CPU must be able to change thread at every clock cycle;
+            it is necessary to duplicate the hardware resources
         \end{itemize}
         \textrightarrow \textit{Advantage:} it can hide both short and long stalls, since instructions from other
         threads is executed when one thread stalls\\
@@ -84,7 +93,7 @@ Multithreading categories:
 
         \item Coarse grained multithreading
         \begin{itemize}
-            \item switching from one thread to another occurs only when there are long stalls -– e.g., for a miss on
+            \item switching from one thread to another occurs only when there are long stalls -- e.g., for a miss on
             the second level cache.
             \item Two threads share many system resources (e.g., architectural registers), the switching from one
             thread to the next requires different clock cycles to save the context.
@@ -106,6 +115,8 @@ Multithreading categories:
             ideally, the exploitation of the issues availabilities is limited only by the unbalance between resources
             requests and availabilities.
         \end{itemize}
+        \textit{Note:} SMT is a technique for improving the overall efficiency of superscalar CPUs with hardware
+        multithreading
     \end{itemize}
 
     \item \textbf{multicore}
@@ -125,7 +136,7 @@ Multithreading categories:
     \label{fig:multithreaded-categories}
 \end{figure}
 
-TLP (e.g., superscalar) and ILP (pipelining) exploit two different forms of parallelism in a program, the
+TLP (e.g., superscalar) and ILP (e.g., pipelining) exploit two different forms of parallelism in a program, the
 following questions arise:
 \begin{itemize}
     \item Could a processor oriented at ILP exploit TLP too?
